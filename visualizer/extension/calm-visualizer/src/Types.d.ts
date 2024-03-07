@@ -7,14 +7,14 @@ export interface Node {
     name: string, 
     class: string,
     uniqueId: string,
-    nodeType: string,
-    extras?: Record<string, unknown>
+    'node-type': string,
+    extras?: {[field: string]: unknown}
 }
 
 export type Relationship = InteractsRelationship | ConnectsRelationship | DeployedInRelationship | ComposedOfRelationship;
 
 export interface InteractsRelationship {
-    relationshipType: 'interacts',
+    'relationship-type': 'interacts',
     uniqueId: string,
     parties: {
         actor: string,
@@ -23,7 +23,7 @@ export interface InteractsRelationship {
 }
 
 export interface ConnectsRelationship {
-    relationshipType: 'connects',
+    'relationship-type': 'connects',
     uniqueId: string,
     protocol: string,
     authentication: string,
@@ -34,7 +34,7 @@ export interface ConnectsRelationship {
 }
 
 export interface DeployedInRelationship {
-    relationshipType: 'deployed-in',
+    'relationship-type': 'deployed-in',
     uniqueId: string,
     parties: {
         container: string,
@@ -43,7 +43,7 @@ export interface DeployedInRelationship {
 }
 
 export interface ComposedOfRelationship {
-    relationshipType: 'composed-of',
+    'relationship-type': 'composed-of',
     uniqueId: string,
     parties: {
         container: string,
