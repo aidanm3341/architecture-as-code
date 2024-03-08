@@ -1,17 +1,17 @@
-import { Translator } from './Translator';
+import { MermaidBuilder } from './MermaidBuilder';
 import { CALMManifest } from './Types';
 
 export function convert(input: string) {
     const calm: CALMManifest = JSON.parse(input);
-    const translator: Translator = new Translator();
+    const mermaidBuilder: MermaidBuilder = new MermaidBuilder();
 
     calm.nodes.map(node => {
-        translator.addNode(node);
+        mermaidBuilder.addNode(node);
     });
 
     calm.relationships.map(relationship => {
-        translator.addRelationship(relationship);
+        mermaidBuilder.addRelationship(relationship);
     });
 
-    return translator.getMermaid();
+    return mermaidBuilder.getMermaid();
 }

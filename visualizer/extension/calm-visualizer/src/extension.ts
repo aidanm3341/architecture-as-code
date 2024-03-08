@@ -2,20 +2,17 @@ import * as vscode from 'vscode';
 import { convert } from './CalmToMermaid';
 
 export function activate(context: vscode.ExtensionContext) {
-    
     context.subscriptions.push(
         vscode.commands.registerCommand('calm.visualize', () => {
-            // Create and show panel
             const panel = vscode.window.createWebviewPanel(
                 'calmVisualizer',
                 'CALM Visualizer',
-                vscode.ViewColumn.Two,
+                vscode.ViewColumn.Two, // so it doesn't hide the currently opened file
                 {}
             );
 
-            // And set its HTML content
             panel.webview.options = {
-                enableScripts: true
+                enableScripts: true // required for the mermaid script to work
             };
 
             const currentFile = vscode.window.activeTextEditor?.document.getText() || '';
@@ -23,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
             panel.webview.html = getWebviewContent(mermaid);
         })
     );
-}
+};
 
 function getWebviewContent(mermaid: string) {
   return `<!DOCTYPE html>
@@ -45,10 +42,6 @@ function getWebviewContent(mermaid: string) {
     <pre class="mermaid">
         ${mermaid}
     </pre>
-    <br><br><br>
-    <pre>
-        ${mermaid}
-    </pre>
 </body>
 </html>`;
-}
+};
