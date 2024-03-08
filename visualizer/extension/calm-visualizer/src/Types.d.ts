@@ -14,39 +14,43 @@ export interface Node {
 export type Relationship = InteractsRelationship | ConnectsRelationship | DeployedInRelationship | ComposedOfRelationship;
 
 export interface InteractsRelationship {
-    'relationship-type': 'interacts',
+    'relationship-type': {
+        'interacts': {
+            actor: string,
+            nodes: string[]
+        }
+    },
     uniqueId: string,
-    parties: {
-        actor: string,
-        nodes: string[]
-    }
 }
 
 export interface ConnectsRelationship {
-    'relationship-type': 'connects',
+    'relationship-type': {
+        'connects': {
+            source: string,
+            destination: string
+        }
+    },
     uniqueId: string,
     protocol: string,
     authentication: string,
-    parties: {
-        source: string,
-        destination: string
-    }
 }
 
 export interface DeployedInRelationship {
-    'relationship-type': 'deployed-in',
+    'relationship-type': {
+        'deployed-in': {
+            container: string,
+            nodes: string[]
+        }
+    },
     uniqueId: string,
-    parties: {
-        container: string,
-        nodes: string[]
-    }
 }
 
 export interface ComposedOfRelationship {
-    'relationship-type': 'composed-of',
-    uniqueId: string,
-    parties: {
-        container: string,
-        nodes: string[]
+    'relationship-type': {
+        'composed-of': {
+            container: string,
+            nodes: string[]
+        },
     }
+    uniqueId: string,
 }

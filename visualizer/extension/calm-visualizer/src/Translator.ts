@@ -3,47 +3,55 @@ import { ComposedOfRelationship, ConnectsRelationship, DeployedInRelationship, I
 export class Translator {
     private nodes: string[] = [];
     private simpleRelationships: string[] = [];
-    private deployedInRelationships: string[] = [];
+    private subgraphRelationships: string[] = [];
+
+    private styles: string[] = [];
 
     public addNode(node: Node): void {
         this.nodes.push(node.uniqueId + '[' + node.name + ']');
     }
 
     public addRelationship(relationship: Relationship): void {
-        if (relationship["relationship-type"] === 'connects') {
-            this.addConnectsRelationship(relationship);
-        } else if (relationship["relationship-type"] === 'interacts') {
-            this.addInteractsRelationship(relationship);
-        } else if (relationship["relationship-type"] === 'deployed-in') {
-            this.addDeployedInRelationship(relationship);
-        } else if (relationship["relationship-type"] === 'composed-of') {
-            this.addComposedOfRelationship(relationship);
+        if ('connects' in relationship['relationship-type']) {
+            this.addConnectsRelationship(relationship as ConnectsRelationship);
+        } else if ('interacts' in relationship["relationship-type"]) {
+            this.addInteractsRelationship(relationship as InteractsRelationship);
+        } else if ('deployed-in' in relationship["relationship-type"]) {
+            this.addDeployedInRelationship(relationship as DeployedInRelationship);
+        } else if ('composed-of' in relationship["relationship-type"]) {
+            this.addComposedOfRelationship(relationship as ComposedOfRelationship);
         }
     }
 
     private addConnectsRelationship(r: ConnectsRelationship): void {
-        const label = r["relationship-type"] + ' ' + r.protocol + ' ' + r.authentication;
-        this.simpleRelationships.push(r.parties.source + ' -->|' + label + '| ' + r.parties.destination);
+        const label = 'connects ' + r.protocol + ' ' + r.authentication;
+        this.simpleRelationships.push(r['relationship-type']['connects'].source + ' -->|' + label + '| ' + r['relationship-type']['connects'].destination);
     }
 
     private addInteractsRelationship(r: InteractsRelationship): void {
-        r.parties.nodes.map(nodeId => {
-            this.simpleRelationships.push(r.parties.actor + ' -->|' + r["relationship-type"] + '|' + nodeId);
+        r['relationship-type']['interacts'].nodes.map(nodeId => {
+            this.simpleRelationships.push(r['relationship-type']['interacts'].actor + ' -->|interacts|' + nodeId);
         });
     }
 
     private addDeployedInRelationship(r: DeployedInRelationship): void {
-        this.deployedInRelationships.push(`
-            subgraph ${r.parties.container} [${r.parties.container}]
-                ${r.parties.nodes.join('\n')}
+        this.subgraphRelationships.push(`
+            subgraph ${r['relationship-type']['deployed-in'].container} [${r['relationship-type']['deployed-in'].container}]
+                ${r['relationship-type']['deployed-in'].nodes.join('\n')}
             end
         `);
+        this.styles.push(`style ${r['relationship-type']['deployed-in'].container} stroke-dasharray: 5 5`);
+        this.styles.push(`style ${r['relationship-type']['deployed-in'].container} fill: none`);
     }
 
     private addComposedOfRelationship(r: ComposedOfRelationship): void {
-        r.parties.nodes.map(nodeId => {
-            this.simpleRelationships.push(r.parties.container + ' -->|' + r["relationship-type"] + '|' + nodeId);
-        });
+        this.subgraphRelationships.push(`
+            subgraph ${r['relationship-type']['composed-of'].container} [${r['relationship-type']['composed-of'].container}]
+                ${r['relationship-type']['composed-of'].nodes.join('\n')}
+            end
+        `);
+        this.styles.push(`style ${r['relationship-type']['composed-of'].container} stroke-dasharray: 5 5`);
+        this.styles.push(`style ${r['relationship-type']['composed-of'].container} fill: none`);
     }
 
     public getMermaid(): string {
@@ -53,7 +61,9 @@ export class Translator {
 
             ${this.simpleRelationships.join('\n')}
 
-            ${this.deployedInRelationships.join('\n')}
+            ${this.subgraphRelationships.join('\n')}
+
+            ${this.styles.join('\n')}
         `;
     }
 }

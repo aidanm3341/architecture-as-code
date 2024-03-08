@@ -9,7 +9,7 @@ export function activate(context: vscode.ExtensionContext) {
             const panel = vscode.window.createWebviewPanel(
                 'calmVisualizer',
                 'CALM Visualizer',
-                vscode.ViewColumn.One,
+                vscode.ViewColumn.Two,
                 {}
             );
 
@@ -31,16 +31,22 @@ function getWebviewContent(mermaid: string) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cat Coding</title>
+    <title>CALM Visualizer</title>
 
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-        mermaid.initialize({ startOnLoad: true });
+        mermaid.initialize({ 
+            startOnLoad: true
+        });
     </script>
 </head>
 
-<body>
+<body style="background-color: white">
     <pre class="mermaid">
+        ${mermaid}
+    </pre>
+    <br><br><br>
+    <pre>
         ${mermaid}
     </pre>
 </body>
