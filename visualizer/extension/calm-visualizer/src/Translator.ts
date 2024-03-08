@@ -8,7 +8,17 @@ export class Translator {
     private styles: string[] = [];
 
     public addNode(node: Node): void {
-        this.nodes.push(node.uniqueId + '[' + node.name + ']');
+        if (node['node-type'] === 'actor') {
+            this.nodes.push(`${node.uniqueId}((${this.capitalizeFirstLetter(node['node-type'])}: ${node.name}))`);
+        } else if (node['node-type'] === 'database') {
+            this.nodes.push(`${node.uniqueId}[(${this.capitalizeFirstLetter(node['node-type'])}: ${node.name})]`);
+        } else {
+            this.nodes.push(`${node.uniqueId}[${this.capitalizeFirstLetter(node['node-type'])}: ${node.name}]`);
+        }
+    }
+
+    private capitalizeFirstLetter(s: string): string {
+        return s.charAt(0).toUpperCase() + s.slice(1);
     }
 
     public addRelationship(relationship: Relationship): void {

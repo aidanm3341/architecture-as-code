@@ -3,12 +3,17 @@ export interface CALMManifest {
     relationships: Relationship[]
 }
 
+export type NodeType = 'actor' | 'system' | 'service' | 'database' | 'internal-network' | 'ldap' | 'dataclient';
+
 export interface Node {
     name: string, 
-    class: string,
+    class?: string,
     uniqueId: string,
-    'node-type': string,
-    extras?: {[field: string]: unknown}
+    'node-type': NodeType,
+    description: string,
+    'data-classification'?: string,
+    'run-as'?: string,
+    instance?: string
 }
 
 export type Relationship = InteractsRelationship | ConnectsRelationship | DeployedInRelationship | ComposedOfRelationship;
