@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
-import { convert } from './CalmToMermaid';
+import { CALMManifest } from './Types';
+import { MermaidBuilder } from './MermaidBuilder';
 
 export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
@@ -16,11 +17,26 @@ export function activate(context: vscode.ExtensionContext) {
             };
 
             const currentFile = vscode.window.activeTextEditor?.document.getText() || '';
-            const mermaid = convert(currentFile);
+            const mermaid = bulidMermaidString(currentFile);
             panel.webview.html = getWebviewContent(mermaid);
         })
     );
 };
+
+function bulidMermaidString(input: string) {
+    const calm: CALMManifest = JSON.parse(input);
+    const mermaidBuilder: MermaidBuilder = new MermaidBuilder();
+
+    calm.nodes.map(node => {
+        mermaidBuilder.addNode(node);
+    });
+
+    calm.relationships.map(relationship => {
+        mermaidBuilder.addRelationship(relationship);
+    });
+
+    return mermaidBuilder.getMermaid();
+}
 
 function getWebviewContent(mermaid: string) {
   return `<!DOCTYPE html>

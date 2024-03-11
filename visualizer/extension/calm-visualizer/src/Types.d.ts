@@ -8,7 +8,7 @@ export type NodeType = 'actor' | 'system' | 'service' | 'database' | 'internal-n
 export interface Node {
     name: string, 
     class?: string,
-    uniqueId: string,
+    'unique-id': string,
     'node-type': NodeType,
     description: string,
     'data-classification'?: string,

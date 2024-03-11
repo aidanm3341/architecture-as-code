@@ -9,11 +9,11 @@ export class MermaidBuilder {
 
     public addNode(node: Node): void {
         if (node['node-type'] === 'actor') {
-            this.nodes.push(`${node.uniqueId}((${this.capitalizeFirstLetter(node['node-type'])}: ${node.name}))`);
+            this.nodes.push(`${node['unique-id']}((${this.capitalizeFirstLetter(node['node-type'])}: ${node.name}))`);
         } else if (node['node-type'] === 'database') {
-            this.nodes.push(`${node.uniqueId}[(${this.capitalizeFirstLetter(node['node-type'])}: ${node.name})]`);
+            this.nodes.push(`${node['unique-id']}[(${this.capitalizeFirstLetter(node['node-type'])}: ${node.name})]`);
         } else {
-            this.nodes.push(`${node.uniqueId}[${this.capitalizeFirstLetter(node['node-type'])}: ${node.name}]`);
+            this.nodes.push(`${node['unique-id']}[${this.capitalizeFirstLetter(node['node-type'])}: ${node.name}]`);
         }
     }
 
