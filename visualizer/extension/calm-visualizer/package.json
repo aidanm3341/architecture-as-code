@@ -20,6 +20,7 @@
       }
     ]
   },
+  "repository": "https://github.com/finos-labs/architecture-as-code",
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",

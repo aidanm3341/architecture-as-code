@@ -35,7 +35,7 @@ export class MermaidBuilder {
 
     private addConnectsRelationship(r: ConnectsRelationship): void {
         const parties = r['relationship-type']['connects'];
-        const label = `connects ${r.protocol} ${r.authentication}`;
+        const label = `connects ${r.protocol || ''} ${r.authentication || ''}`;
 
         this.arrowRelationships.push(`${parties.source} -->|${label}| ${parties.destination}`);
     }
