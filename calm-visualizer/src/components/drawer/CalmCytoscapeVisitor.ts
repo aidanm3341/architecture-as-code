@@ -2,13 +2,12 @@ import { BaseCalmVisitor, CalmNode, CalmInteractsRelationship, CalmConnectsRelat
 import { CalmComposedOfRelationship, CalmDeployedInRelationship } from "../../../../shared/src/model/model";
 import { Edge, Node } from "../cytoscape-renderer/CytoscapeRenderer";
 
-
-export class CalmVisualizationVisitor extends BaseCalmVisitor {
+export class CalmCytoscapeVisitor extends BaseCalmVisitor {
     private nodes: Node[] = [];
     private edges: Edge[] = [];
 
-    // The Keys of this object are the ID's of the nodes to go inside the value
-    private groups = new Map<string, string[]>([]);
+    private parents: string[] = [];
+    private parentChildRelationships: {childId: string, parentId: string}[] = [];
 
     constructor(calm: string) {
         super();
@@ -16,33 +15,35 @@ export class CalmVisualizationVisitor extends BaseCalmVisitor {
     }
 
     public visitCalmNode(element: CalmNode): void {
+        const nodeType = this.parents.includes(element.uniqueId) ? 'group' : 'node';
+
+        const parentChildRelationship = this.parentChildRelationships.find(rel => rel.childId == element.uniqueId);
+        const parent: string | undefined = parentChildRelationship?.parentId;
+
         this.nodes.push({
-            classes: 'node',
+            classes: nodeType,
             data: {
                 id: element.uniqueId,
                 label: element.name,
                 description: element.description,
-                type: element.type
+                type: element.type,
+                parent: parent
             }
         });
     }
 
     public visitCalmComposedOfRelationship(element: CalmComposedOfRelationship): void {
         element.nodes.forEach(node => {
-            if (this.groups.has(node)) {
-                this.groups.get(node)!.push(element.container);
-            }
-            this.groups.set(node, [element.container]);
+            this.parentChildRelationships.push({childId: node, parentId: element.container});
         });
+        this.parents.push(element.container);
     }
 
     public visitCalmDeployedInRelationship(element: CalmDeployedInRelationship): void {
         element.nodes.forEach(node => {
-            if (this.groups.has(node)) {
-                this.groups.get(node)!.push(element.container);
-            }
-            this.groups.set(node, [element.container]);
+            this.parentChildRelationships.push({childId: node, parentId: element.container});
         });
+        this.parents.push(element.container);
     }
 
     public visitCalmInteractsRelationship(element: CalmInteractsRelationship): void {
