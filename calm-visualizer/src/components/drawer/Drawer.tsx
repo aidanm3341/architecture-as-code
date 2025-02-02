@@ -4,7 +4,7 @@ import CytoscapeRenderer, { Edge, Node } from '../cytoscape-renderer/CytoscapeRe
 import {
     CALMArchitecture,
 } from '../../../../shared/src';
-import { CalmVisualizationVisitor } from './visualizerVisitor';
+import { CalmCytoscapeVisitor } from './CalmCytoscapeVisitor.ts';
 
 interface DrawerProps {
     calmInstance?: CALMArchitecture;
@@ -24,7 +24,7 @@ function Drawer({ calmInstance, title, isConDescActive, isNodeDescActive, rawCal
     let nodes: Node[] = [];
     let edges: Edge[] = [];
     if (rawCalm) {
-        const visitor = new CalmVisualizationVisitor(rawCalm);
+        const visitor = new CalmCytoscapeVisitor(rawCalm);
         edges = visitor.getEdges();
         nodes = visitor.getNodes();
     }
