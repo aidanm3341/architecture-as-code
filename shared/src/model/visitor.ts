@@ -1,4 +1,4 @@
-import { CalmComposedOfRelationship, CalmConnectsRelationship, CalmDeployedInRelationship, CalmInteractsRelationship, CalmNode } from './model';
+import { CalmComposedOfRelationship, CalmConnectsRelationship, CalmDeployedInRelationship, CalmInteractsRelationship, CalmMetadata, CalmNode } from './model';
 
 export interface CalmVisitor {
     visitCalmNode(element: CalmNode): void;
@@ -7,6 +7,7 @@ export interface CalmVisitor {
     visitCalmInteractsRelationship(element: CalmInteractsRelationship): void;
     visitCalmComposedOfRelationship(element: CalmComposedOfRelationship): void;
     visitCalmDeployedInRelationship(element: CalmDeployedInRelationship): void;
+    visitCalmMetaData(element: CalmMetadata): void;
 }
 
 export class BaseCalmVisitor implements CalmVisitor {
@@ -16,4 +17,5 @@ export class BaseCalmVisitor implements CalmVisitor {
     visitCalmInteractsRelationship(_element: CalmInteractsRelationship): void {}
     visitCalmComposedOfRelationship(_element: CalmComposedOfRelationship): void {}
     visitCalmDeployedInRelationship(_element: CalmDeployedInRelationship): void {}
+    visitCalmMetaData(_element: CalmMetadata): void {}
 }

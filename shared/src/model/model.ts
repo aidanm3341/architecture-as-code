@@ -75,3 +75,13 @@ export class CalmDeployedInRelationship implements CalmItem {
         visitor.visitCalmDeployedInRelationship(this);
     }
 }
+
+export class CalmMetadata implements CalmItem {
+    constructor(
+        public originalJson: unknown
+    ){};
+
+    accept(visitor: CalmVisitor): void {
+        visitor.visitCalmMetaData(this);
+    }
+}

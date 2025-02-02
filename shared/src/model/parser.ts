@@ -1,4 +1,4 @@
-import { CalmNode, CalmItem, CalmConnectsRelationship, CalmInteractsRelationship, CalmDeployedInRelationship, CalmComposedOfRelationship } from './model';
+import { CalmNode, CalmItem, CalmConnectsRelationship, CalmInteractsRelationship, CalmDeployedInRelationship, CalmComposedOfRelationship, CalmMetadata } from './model';
 
 function parseNodes(nodes: object[]): CalmNode[] {
     return nodes.map(node => {
@@ -56,6 +56,20 @@ function parseRelationships(relationships: object[]): CalmItem[] {
     });
 }
 
+function parseMetadata(metadata?: unknown[]): CalmMetadata[] {
+    if (!metadata) return [];
+
+    return metadata.map(field => new CalmMetadata(field));
+}
+
+function parseControls(_controls: object[]): CalmItem[] {
+    return [];
+}
+
+function parseFlows(_flows: object[]): CalmItem[] {
+    return [];
+}
+
 export function parse(calmArch: string): CalmItem[] {
     // assuming calmArch is valid CALM
     const calmObj = JSON.parse(calmArch);
@@ -64,6 +78,9 @@ export function parse(calmArch: string): CalmItem[] {
     
     items.push(...parseRelationships(calmObj.relationships));
     items.push(...parseNodes(calmObj.nodes));
+    items.push(...parseMetadata(calmObj.metadata));
+    items.push(...parseControls(calmObj.controls));
+    items.push(...parseFlows(calmObj.flows));
 
     return items;
 }
