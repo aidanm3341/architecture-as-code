@@ -32,8 +32,8 @@ class CalmPrinter implements CalmVisitor {
 }
 
 const calmStuff: CalmItem[] = [
-    new CalmNode('node-1', 'Node 1', 'This is the first node', 'service', {}),
-    new CalmNode('node-2', 'Node 2', 'This is the second node', 'system', {}),
+    new CalmNode('node-1', 'Node 1', 'This is the first node', 'service', undefined, undefined, {}),
+    new CalmNode('node-2', 'Node 2', 'This is the second node', 'system', undefined, undefined, {}),
     new CalmConnectsRelationship('node-1-node-2', 'some description', 'node-1', 'node-2', {})
 ];
 

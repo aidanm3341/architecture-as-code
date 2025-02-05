@@ -1,5 +1,5 @@
 import { SchemaDirectory } from '../commands/generate/schema-directory';
-import { CalmNode, CalmItem, CalmConnectsRelationship, CalmInteractsRelationship, CalmDeployedInRelationship, CalmComposedOfRelationship, CalmMetadata, CalmControl, CalmControlRequirement } from './model';
+import { CalmNode, CalmItem, CalmConnectsRelationship, CalmInteractsRelationship, CalmDeployedInRelationship, CalmComposedOfRelationship, CalmMetadata, CalmControl, CalmControlRequirement, CalmRelationship, CalmInterface } from './model';
 
 export class CalmParser {
     constructor(private schemaDirectory: SchemaDirectory) {};
@@ -26,12 +26,21 @@ export class CalmParser {
                 node['name'],
                 node['description'],
                 node['node-type'],
+                node['interfaces'] ?? this.parseInterfaces(node['interfaces']),
+                node['controls'] ?? this.parseControls(node['controls']),
                 node
             );
         });
     }
+
+    private parseInterfaces(interfaces: object[]): CalmInterface[] {
+        return interfaces.map((calmInterface: object) => new CalmInterface(
+            calmInterface['unique-id'],
+            calmInterface
+        ));
+    }
     
-    private parseRelationships(relationships: object[]): CalmItem[] {
+    private parseRelationships(relationships: object[]): CalmRelationship[] {
         return relationships.map(relationship => {
             if ('connects' in relationship['relationship-type']) {
                 return new CalmConnectsRelationship(

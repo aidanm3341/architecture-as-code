@@ -12,6 +12,8 @@ export class CalmNode implements CalmItem {
         public name: string,
         public description: string,
         public type: CalmNodeType,
+        public interfaces: unknown[] | undefined,
+        public controls: unknown | undefined,
         public originalJson: object
     ){};
 
@@ -19,6 +21,15 @@ export class CalmNode implements CalmItem {
         visitor.visitCalmNode(this);
     }
 }
+
+export class CalmInterface {
+    constructor(
+        public type: string,
+        public originalJson: object
+    ){};
+}
+
+export type CalmRelationship = CalmConnectsRelationship | CalmInteractsRelationship | CalmDeployedInRelationship | CalmComposedOfRelationship;
 
 export class CalmConnectsRelationship implements CalmItem {
     constructor(
