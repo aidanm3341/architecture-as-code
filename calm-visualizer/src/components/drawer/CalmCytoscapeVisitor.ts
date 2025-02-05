@@ -65,8 +65,8 @@ export class CalmCytoscapeVisitor extends BaseCalmVisitor {
             data: {
                 id: element.uniqueId,
                 label: element.description,
-                source: element.source,
-                target: element.target
+                source: element.source.node,
+                target: element.target.node
             }
         });
     }

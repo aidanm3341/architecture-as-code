@@ -35,14 +35,22 @@ export class CalmConnectsRelationship implements CalmItem {
     constructor(
         public uniqueId: string,
         public description: string,
-        public source: string,
-        public target: string,
+        public source: CalmNodeInterface,
+        public target: CalmNodeInterface,
         public originalJson: object
     ){};
 
     accept(visitor: CalmVisitor): void {
         visitor.visitCalmConnectsRelationship(this);
     }
+}
+
+export class CalmNodeInterface {
+    constructor(
+        public node: string,
+        public interfaces: string[],
+        public originalJson: object
+    ){};
 }
 
 export class CalmInteractsRelationship implements CalmItem {
