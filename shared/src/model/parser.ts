@@ -1,5 +1,5 @@
 import { SchemaDirectory } from '../commands/generate/schema-directory';
-import { CalmNode, CalmItem, CalmConnectsRelationship, CalmInteractsRelationship, CalmDeployedInRelationship, CalmComposedOfRelationship, CalmMetadata, CalmControl, CalmControlRequirement, CalmRelationship, CalmInterface } from './model';
+import { CalmNode, CalmItem, CalmConnectsRelationship, CalmInteractsRelationship, CalmDeployedInRelationship, CalmComposedOfRelationship, CalmMetadata, CalmControl, CalmControlRequirement, CalmRelationship, CalmInterface, CalmNodeInterface } from './model';
 
 export class CalmParser {
     constructor(private schemaDirectory: SchemaDirectory) {};
@@ -44,8 +44,8 @@ export class CalmParser {
                 return new CalmConnectsRelationship(
                     relationship['unique-id'],
                     relationship['description'],
-                    relationship['relationship-type']['connects']['source']['node'],
-                    relationship['relationship-type']['connects']['destination']['node'],
+                    this.parseNodeInterface(relationship['relationship-type']['connects']['source']),
+                    this.parseNodeInterface(relationship['relationship-type']['connects']['destination']),
                     relationship
                 );
             }
@@ -80,6 +80,14 @@ export class CalmParser {
                 );
             }
         });
+    }
+
+    private parseNodeInterface(nodeInterface: object): CalmNodeInterface {
+        return new CalmNodeInterface(
+            nodeInterface['node'],
+            nodeInterface['interfaces'] || [],
+            nodeInterface
+        );
     }
     
     private parseMetadata(metadata?: unknown[]): CalmMetadata[] {
