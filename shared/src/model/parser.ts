@@ -130,12 +130,12 @@ export class CalmParser {
     
     private parseFlows(flows: object[]): CalmItem[] {
         if (!flows) return [];
-        
+
         return flows.map(flow => new CalmFlow(
             flow['unique-id'],
             flow['name'],
             flow['description'],
-            this.parseFlowTransitions(flow['transitions']),
+            flow['transitions'] && this.parseFlowTransitions(flow['transitions']),
             flow
         ));
     }
