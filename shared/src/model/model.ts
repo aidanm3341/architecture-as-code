@@ -5,6 +5,7 @@ export interface CalmItem {
 }
 
 export type CalmNodeType = 'actor' | 'system' | 'service' | 'database' | 'network' | 'ldap' | 'dataclient';
+export type CalmDataClassification = 'Public' | 'Confidential' | 'Highly Restricted' | 'MNPI' | 'PII';
 
 export class CalmNode implements CalmItem {
     constructor(
@@ -14,6 +15,11 @@ export class CalmNode implements CalmItem {
         public type: CalmNodeType,
         public interfaces: unknown[] | undefined,
         public controls: unknown | undefined,
+        public detailedArchitecture: string | undefined,
+        public dataClassification: CalmDataClassification | undefined,
+        public runAs: string | undefined,
+        public instance: string | undefined,
+        public metadata: CalmMetadata | undefined,
         public originalJson: object
     ){};
 

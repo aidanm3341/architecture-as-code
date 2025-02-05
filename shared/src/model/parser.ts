@@ -27,6 +27,11 @@ export class CalmParser {
             node['node-type'],
             node['interfaces'] ?? this.parseInterfaces(node['interfaces']),
             node['controls'] ?? this.parseControls(node['controls']),
+            node['detailed-architecture'],
+            node['data-classification'],
+            node['run-as'],
+            node['instance'],
+            node['metadata'] ?? this.parseMetadata(node['metadata']),
             node
         ));
     }
