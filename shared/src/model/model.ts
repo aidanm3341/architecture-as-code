@@ -37,12 +37,20 @@ export class CalmInterface {
 
 export type CalmRelationship = CalmConnectsRelationship | CalmInteractsRelationship | CalmDeployedInRelationship | CalmComposedOfRelationship;
 
+export type CalmRelationshipProtocol = 'HTTP' | 'HTTPS' | 'FTP' | 'SFTP' | 'JDBC' | 'WebSocket' | 'SocketIO' | 'LDAP' | 'AMQP' | 'TLS' | 'mTLS' | 'TCP';
+
+export type CalmRelationshipAuthentication = 'Basic' | 'OAuth2' | 'Kerberos' | 'SPNEGO' | 'Certificate';
+
 export class CalmConnectsRelationship implements CalmItem {
     constructor(
         public uniqueId: string,
         public description: string,
         public source: CalmNodeInterface,
         public target: CalmNodeInterface,
+        public protocol: CalmRelationshipProtocol | undefined,
+        public authentication: CalmRelationshipAuthentication | undefined,
+        public metadata: CalmMetadata[] | undefined,
+        public controls: CalmControl[] | undefined,
         public originalJson: object
     ){};
 

@@ -43,6 +43,10 @@ const calmStuff: CalmItem[] = [
         'some description', 
         {node: 'node-1', interfaces: [], originalJson: {}}, 
         {node: 'node-2', interfaces: [], originalJson: {}}, 
+        undefined,
+        undefined,
+        undefined,
+        undefined,
         {}
     )
 ];

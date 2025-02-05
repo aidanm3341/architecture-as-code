@@ -51,6 +51,10 @@ export class CalmParser {
                     relationship['description'],
                     this.parseNodeInterface(relationship['relationship-type']['connects']['source']),
                     this.parseNodeInterface(relationship['relationship-type']['connects']['destination']),
+                    relationship['protocol'],
+                    relationship['authentication'],
+                    this.parseMetadata(relationship['metadata']),
+                    this.parseControls(relationship['controls']),
                     relationship
                 );
             }
