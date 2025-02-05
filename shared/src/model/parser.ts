@@ -1,8 +1,7 @@
-import { SchemaDirectory } from '../commands/generate/schema-directory';
 import { CalmNode, CalmItem, CalmConnectsRelationship, CalmInteractsRelationship, CalmDeployedInRelationship, CalmComposedOfRelationship, CalmMetadata, CalmControl, CalmControlRequirement, CalmRelationship, CalmInterface, CalmNodeInterface, CalmFlow, CalmFlowTransition } from './model';
 
 export class CalmParser {
-    constructor(private schemaDirectory: SchemaDirectory) {};
+    constructor() {};
 
     public parse(calmArch: string): CalmItem[] {
         // assuming calmArch is valid CALM
