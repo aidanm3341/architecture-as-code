@@ -1,5 +1,6 @@
-import { BaseCalmVisitor, CalmNode, CalmInteractsRelationship, CalmConnectsRelationship, parse } from "../../../../shared/src/model";
-import { CalmComposedOfRelationship, CalmDeployedInRelationship } from "../../../../shared/src/model/model";
+import { SchemaDirectory } from "../../../../shared/src/commands/generate/schema-directory";
+import { BaseCalmVisitor, CalmNode, CalmInteractsRelationship, CalmConnectsRelationship, CalmParser } from "../../../../shared/src/model";
+import { CalmComposedOfRelationship, CalmDeployedInRelationship, CalmItem } from "../../../../shared/src/model/model";
 import { Edge, Node } from "../cytoscape-renderer/CytoscapeRenderer";
 
 export class CalmCytoscapeVisitor extends BaseCalmVisitor {
@@ -11,7 +12,7 @@ export class CalmCytoscapeVisitor extends BaseCalmVisitor {
 
     constructor(calm: string) {
         super();
-        parse(calm).forEach(item => item.accept(this));
+        new CalmParser(new SchemaDirectory()).parse(calm).forEach((item: CalmItem) => item.accept(this));
     }
 
     public visitCalmNode(element: CalmNode): void {

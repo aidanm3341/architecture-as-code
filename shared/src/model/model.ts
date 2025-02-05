@@ -85,3 +85,23 @@ export class CalmMetadata implements CalmItem {
         visitor.visitCalmMetaData(this);
     }
 }
+
+export class CalmControlRequirement {
+    constructor(
+        public controlRequirementUrl: string,
+        public controlConfigUrl: string
+    ){};
+}
+
+export class CalmControl implements CalmItem {
+    constructor(
+        public controlId: string,
+        public description: string,
+        public requirements: CalmControlRequirement[],
+        public originalJson: string
+    ){};
+
+    accept(visitor: CalmVisitor): void {
+        visitor.visitCalmControl(this);
+    }
+}

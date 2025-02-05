@@ -1,4 +1,4 @@
-import { CalmNode, CalmConnectsRelationship, CalmInteractsRelationship, CalmComposedOfRelationship, CalmDeployedInRelationship, CalmItem, CalmMetadata } from './model';
+import { CalmNode, CalmConnectsRelationship, CalmInteractsRelationship, CalmComposedOfRelationship, CalmDeployedInRelationship, CalmItem, CalmMetadata, CalmControl } from './model';
 import { CalmVisitor } from './visitor';
 
 class CalmPrinter implements CalmVisitor {
@@ -24,6 +24,10 @@ class CalmPrinter implements CalmVisitor {
 
     visitCalmMetaData(element: CalmMetadata): void {
         console.log(element.originalJson);
+    }
+
+    visitCalmControl(element: CalmControl): void {
+        console.log(element.controlId);
     }
 }
 
