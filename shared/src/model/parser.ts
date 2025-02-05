@@ -20,17 +20,15 @@ export class CalmParser {
     }
 
     private parseNodes(nodes: object[]): CalmNode[] {
-        return nodes.map(node => {
-            return new CalmNode(
-                node['unique-id'],
-                node['name'],
-                node['description'],
-                node['node-type'],
-                node['interfaces'] ?? this.parseInterfaces(node['interfaces']),
-                node['controls'] ?? this.parseControls(node['controls']),
-                node
-            );
-        });
+        return nodes.map(node => new CalmNode(
+            node['unique-id'],
+            node['name'],
+            node['description'],
+            node['node-type'],
+            node['interfaces'] ?? this.parseInterfaces(node['interfaces']),
+            node['controls'] ?? this.parseControls(node['controls']),
+            node
+        ));
     }
 
     private parseInterfaces(interfaces: object[]): CalmInterface[] {
