@@ -88,10 +88,10 @@ export class CalmParser {
         return metadata.map(field => new CalmMetadata(field));
     }
     
-    private parseControls(controlObject?: object): CalmItem[] {
+    private parseControls(controlObject?: object): CalmControl[] {
         if (!controlObject) return [];
 
-        const controls: CalmItem[] = [];
+        const controls: CalmControl[] = [];
     
         Object.keys(controlObject).forEach(controlId => {
             controls.push(new CalmControl(
