@@ -24,13 +24,13 @@ export class CalmParser {
             node['name'],
             node['description'],
             node['node-type'],
-            node['interfaces'] ?? this.parseInterfaces(node['interfaces']),
-            node['controls'] ?? this.parseControls(node['controls']),
+            node['interfaces'] && this.parseInterfaces(node['interfaces']),
+            node['controls'] && this.parseControls(node['controls']),
             node['detailed-architecture'],
             node['data-classification'],
             node['run-as'],
             node['instance'],
-            node['metadata'] ?? this.parseMetadata(node['metadata']),
+            node['metadata'] && this.parseMetadata(node['metadata']),
             node
         ));
     }
@@ -129,6 +129,8 @@ export class CalmParser {
     }
     
     private parseFlows(flows: object[]): CalmItem[] {
+        if (!flows) return [];
+        
         return flows.map(flow => new CalmFlow(
             flow['unique-id'],
             flow['name'],

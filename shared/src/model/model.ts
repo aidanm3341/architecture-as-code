@@ -19,7 +19,7 @@ export class CalmNode implements CalmItem {
         public dataClassification: CalmDataClassification | undefined,
         public runAs: string | undefined,
         public instance: string | undefined,
-        public metadata: CalmMetadata | undefined,
+        public metadata: CalmMetadata[] | undefined,
         public originalJson: object
     ){};
 
