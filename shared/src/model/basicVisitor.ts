@@ -1,4 +1,4 @@
-import { CalmNode, CalmConnectsRelationship, CalmInteractsRelationship, CalmComposedOfRelationship, CalmDeployedInRelationship, CalmItem, CalmMetadata, CalmControl } from './model';
+import { CalmNode, CalmConnectsRelationship, CalmInteractsRelationship, CalmComposedOfRelationship, CalmDeployedInRelationship, CalmItem, CalmMetadata, CalmControl, CalmFlow } from './model';
 import { CalmVisitor } from './visitor';
 
 class CalmPrinter implements CalmVisitor {
@@ -28,6 +28,10 @@ class CalmPrinter implements CalmVisitor {
 
     visitCalmControl(element: CalmControl): void {
         console.log(element.controlId);
+    }
+
+    visitCalmFlow(element: CalmFlow): void {
+        console.log(element.uniqueId);
     }
 }
 

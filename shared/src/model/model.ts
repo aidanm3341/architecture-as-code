@@ -116,3 +116,28 @@ export class CalmControl implements CalmItem {
         visitor.visitCalmControl(this);
     }
 }
+
+export class CalmFlow implements CalmItem {
+    constructor(
+        public uniqueId: string,
+        public name: string,
+        public description: string,
+        public transitions: CalmFlowTransition[],
+        public originalJson: object
+    ){};
+
+    accept(visitor: CalmVisitor): void {
+        visitor.visitCalmFlow(this);
+    }
+}
+
+export class CalmFlowTransition {
+    constructor(
+        public relationshipUniqueId: string,
+        public sequenceNumber: number,
+        public summary: string,
+        public direction: CalmFlowTransitionDirection = 'source-to-destination'
+    ){};
+}
+
+export type CalmFlowTransitionDirection = 'source-to-destination' | 'destination-to-source';
