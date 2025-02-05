@@ -1,5 +1,5 @@
 import { SchemaDirectory } from '../commands/generate/schema-directory';
-import { CalmNode, CalmItem, CalmConnectsRelationship, CalmInteractsRelationship, CalmDeployedInRelationship, CalmComposedOfRelationship, CalmMetadata, CalmControl, CalmControlRequirement, CalmRelationship, CalmInterface, CalmNodeInterface } from './model';
+import { CalmNode, CalmItem, CalmConnectsRelationship, CalmInteractsRelationship, CalmDeployedInRelationship, CalmComposedOfRelationship, CalmMetadata, CalmControl, CalmControlRequirement, CalmRelationship, CalmInterface, CalmNodeInterface, CalmFlow, CalmFlowTransition } from './model';
 
 export class CalmParser {
     constructor(private schemaDirectory: SchemaDirectory) {};
@@ -120,7 +120,22 @@ export class CalmParser {
         ));
     }
     
-    private parseFlows(_flows: object[]): CalmItem[] {
-        return [];
+    private parseFlows(flows: object[]): CalmItem[] {
+        return flows.map(flow => new CalmFlow(
+            flow['unique-id'],
+            flow['name'],
+            flow['description'],
+            this.parseFlowTransitions(flow['transitions']),
+            flow
+        ));
+    }
+
+    private parseFlowTransitions(flowTransitions: object[]): CalmFlowTransition[] {
+        return flowTransitions.map(flowTransition => new CalmFlowTransition(
+            flowTransition['relationship-unique-id'],
+            flowTransition['sequence-number'],
+            flowTransition['summary'],
+            flowTransition['direction']
+        ));
     }
 }
