@@ -38,18 +38,22 @@ function createDropDownInput(
     fieldName: string,
     index: number,
     register: UseFormRegister<Inputs>,
+    values: string[],
     defaultValue: string,
     errors: FieldErrors<Inputs>
 ) {
     return (
         <div className="w-full">
             <select
-                className="select select-primary"
+                className="select select-primary w-full"
                 {...register(`row-${index}-${fieldName}`, { required: false })}
                 defaultValue={defaultValue}
             >
-                <option value="const">const</option>
-                <option value="var">variable</option>
+                {values.map((value, index) => (
+                    <option key={index} value={value}>
+                        {value}
+                    </option>
+                ))}
             </select>
             {errors[`row-${index}-${fieldName}`] && <span>This field is required</span>}
         </div>
@@ -84,7 +88,7 @@ type ControlFormProps = {
 export function ControlForm({ onSubmit, onChange }: ControlFormProps) {
     const [rows, setRows] = useState<Row[]>([
         {
-            label: 'control-id',
+            label: 'control-property-1',
             valueType: 'const',
             value: '',
             required: true,
@@ -104,7 +108,7 @@ export function ControlForm({ onSubmit, onChange }: ControlFormProps) {
                 setRows([
                     ...rows,
                     {
-                        label: 'New Row',
+                        label: `control-property-${rows.length + 1}`,
                         valueType: 'const',
                         value: '',
                         required: true,
@@ -112,7 +116,7 @@ export function ControlForm({ onSubmit, onChange }: ControlFormProps) {
                 ]);
             }}
         >
-            Add new row
+            Add new property
         </button>
     );
 
@@ -149,12 +153,28 @@ export function ControlForm({ onSubmit, onChange }: ControlFormProps) {
                                             'valuetype',
                                             index,
                                             register,
+                                            ['const', 'variable'],
                                             row.valueType,
                                             errors
                                         )}
                                     </td>
                                     <td className="min-w-96">
-                                        {createInput('value', index, register, row.value, errors)}
+                                        {row.valueType === 'const'
+                                            ? createInput(
+                                                  'value',
+                                                  index,
+                                                  register,
+                                                  row.value,
+                                                  errors
+                                              )
+                                            : createDropDownInput(
+                                                  'value',
+                                                  index,
+                                                  register,
+                                                  ['string', 'boolean', 'number'],
+                                                  'string',
+                                                  errors
+                                              )}
                                     </td>
 
                                     <td>
