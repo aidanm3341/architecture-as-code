@@ -25,7 +25,7 @@ function createInput(
     return (
         <div className="w-full">
             <input
-                className="input input-primary input-md"
+                className="input input-primary input-sm"
                 {...register(`row-${index}-${fieldName}`, { required: false })}
                 defaultValue={defaultValue}
             />
@@ -45,7 +45,7 @@ function createDropDownInput(
     return (
         <div className="w-full">
             <select
-                className="select select-primary w-full"
+                className="select select-primary select-sm w-full"
                 {...register(`row-${index}-${fieldName}`, { required: false })}
                 defaultValue={defaultValue}
             >
@@ -103,7 +103,7 @@ export function ControlForm({ onSubmit, onChange }: ControlFormProps) {
     } = useForm<Inputs>();
     const addNewRowButton = (
         <button
-            className="btn btn-neutral"
+            className="btn btn-neutral btn-sm"
             onClick={() => {
                 setRows([
                     ...rows,
@@ -194,7 +194,11 @@ export function ControlForm({ onSubmit, onChange }: ControlFormProps) {
 
                 <div className="flex flex-row justify-between">
                     {addNewRowButton}
-                    <input className="btn btn-primary" type="submit" value="Create Control" />
+                    <input
+                        className="btn btn-primary btn-sm"
+                        type="submit"
+                        value="Create Control"
+                    />
                 </div>
             </form>
         </>
