@@ -33,7 +33,7 @@ export function Navbar() {
                             <NavLink to="/visualizer">Visualizer</NavLink>
                         </li>
                         <li>
-                            <NavLink to="/control-editor">Control Creator</NavLink>
+                            <NavLink to="/control-editor">Control Requirement Builder</NavLink>
                         </li>
                     </ul>
                 </div>
@@ -54,7 +54,7 @@ export function Navbar() {
                         </li>
                         <li>
                             <NavLink className="btn-ghost btn text-primary" to="/control-editor">
-                                Control Creator
+                                Control Requirement Builder
                             </NavLink>
                         </li>
                     </ul>
