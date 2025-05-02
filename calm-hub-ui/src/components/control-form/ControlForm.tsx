@@ -1,19 +1,13 @@
 import { FieldErrors, useForm, UseFormRegister } from 'react-hook-form';
 import './ControlForm.css';
 import { useState } from 'react';
+import { Property } from './json-schema-builder.js';
 
 type Inputs = {
     [key: string]: unknown;
 };
 
-export type Row = {
-    label: string;
-    valueType: 'const' | 'var';
-    value: string;
-    required: boolean;
-};
-
-const numberOfFields = 4;
+const numberOfFields = 5;
 
 function createInput(
     fieldName: string,
@@ -60,18 +54,25 @@ function createDropDownInput(
     );
 }
 
-function parseFormData(data: Inputs): Row[] {
-    const rows: Row[] = [];
+function parseFormData(data: Inputs): Property[] {
+    const rows: Property[] = [];
     const numberOfRows = Object.keys(data).length / numberOfFields;
 
     for (let i = 0; i < numberOfRows; i++) {
         const label = data[`row-${i}-label`] as string;
-        const valueType = data[`row-${i}-valuetype`] as 'const' | 'var';
+        const variability = data[`row-${i}-variability`] as 'const' | 'variable';
         const value = data[`row-${i}-value`] as string;
+        const valueType = data[`row-${i}-valueType`] as
+            | 'boolean'
+            | 'string'
+            | 'number'
+            | 'object'
+            | 'array';
         const required = data[`row-${i}-required`] as boolean;
 
         rows.push({
             label,
+            variability,
             valueType,
             value,
             required,
@@ -81,15 +82,16 @@ function parseFormData(data: Inputs): Row[] {
 }
 
 type ControlFormProps = {
-    onSubmit: (data: Row[]) => void;
-    onChange: (data: Row[]) => void;
+    onSubmit: (data: Property[]) => void;
+    onChange: (data: Property[]) => void;
 };
 
 export function ControlForm({ onSubmit, onChange }: ControlFormProps) {
-    const [rows, setRows] = useState<Row[]>([
+    const [properties, setProperties] = useState<Property[]>([
         {
             label: 'control-property-1',
-            valueType: 'const',
+            variability: 'const',
+            valueType: 'string',
             value: '',
             required: true,
         },
@@ -105,11 +107,12 @@ export function ControlForm({ onSubmit, onChange }: ControlFormProps) {
         <button
             className="btn btn-neutral btn-sm"
             onClick={() => {
-                setRows([
-                    ...rows,
+                setProperties([
+                    ...properties,
                     {
-                        label: `control-property-${rows.length + 1}`,
-                        valueType: 'const',
+                        label: `control-property-${properties.length + 1}`,
+                        variability: 'const',
+                        valueType: 'string',
                         value: '',
                         required: true,
                     },
@@ -122,7 +125,7 @@ export function ControlForm({ onSubmit, onChange }: ControlFormProps) {
 
     watch((data) => {
         const newRows = parseFormData(data);
-        setRows(newRows);
+        setProperties(newRows);
         onChange(newRows);
     });
 
@@ -136,13 +139,14 @@ export function ControlForm({ onSubmit, onChange }: ControlFormProps) {
                     <thead>
                         <tr>
                             <th>Label</th>
+                            <th>Variability</th>
                             <th>Value Type</th>
                             <th>Value</th>
                             <th>Required</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {rows.map((row, index) => {
+                        {properties.map((row, index) => {
                             return (
                                 <tr key={index}>
                                     <td>
@@ -150,16 +154,26 @@ export function ControlForm({ onSubmit, onChange }: ControlFormProps) {
                                     </td>
                                     <td className="max-w-32">
                                         {createDropDownInput(
-                                            'valuetype',
+                                            'variability',
                                             index,
                                             register,
                                             ['const', 'variable'],
+                                            row.variability,
+                                            errors
+                                        )}
+                                    </td>
+                                    <td>
+                                        {createDropDownInput(
+                                            'valueType',
+                                            index,
+                                            register,
+                                            ['string', 'boolean', 'number', 'object', 'array'],
                                             row.valueType,
                                             errors
                                         )}
                                     </td>
                                     <td className="min-w-96">
-                                        {row.valueType === 'const'
+                                        {row.variability === 'const'
                                             ? createInput(
                                                   'value',
                                                   index,

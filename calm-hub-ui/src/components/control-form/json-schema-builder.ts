@@ -1,18 +1,10 @@
-type ConstProperty = {
+export type Property = {
     label: string;
-    type: 'const';
+    variability: 'const' | 'variable';
+    valueType: 'boolean' | 'string' | 'number' | 'object' | 'array';
     value: string;
     required: boolean;
 };
-
-type VariableProperty = {
-    label: string;
-    type: 'type';
-    value: 'const' | 'boolean' | 'string' | 'number';
-    required: boolean;
-};
-
-export type Property = ConstProperty | VariableProperty;
 
 export function buildJsonSchema(properties: Property[]): object {
     return {
@@ -26,10 +18,16 @@ export function buildJsonSchema(properties: Property[]): object {
             },
         ],
         properties: properties.reduce(
-            (acc, { label, type, value }) => {
-                acc[label] = {
-                    [type]: value,
-                };
+            (acc, { label, variability, valueType, value }) => {
+                if (variability === 'const') {
+                    acc[label] = {
+                        const: value,
+                    };
+                } else {
+                    acc[label] = {
+                        type: valueType,
+                    };
+                }
                 return acc;
             },
             {} as Record<string, object>

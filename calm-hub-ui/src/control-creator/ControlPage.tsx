@@ -23,11 +23,12 @@ export function ControlPage() {
                                 setData(
                                     buildJsonSchema(
                                         data.map((item) => {
-                                            if (item.valueType === 'const') {
+                                            if (item.variability === 'const') {
                                                 const property: Property = {
                                                     label: item.label,
-                                                    type: 'const',
+                                                    variability: 'const',
                                                     value: item.value,
+                                                    valueType: item.valueType,
                                                     required: item.required,
                                                 };
 
@@ -35,12 +36,13 @@ export function ControlPage() {
                                             } else {
                                                 const property: Property = {
                                                     label: item.label,
-                                                    type: 'type',
+                                                    variability: 'variable',
                                                     value: item.value as
                                                         | 'string'
                                                         | 'number'
                                                         | 'boolean'
                                                         | 'const',
+                                                    valueType: item.valueType,
                                                     required: item.required,
                                                 };
 
