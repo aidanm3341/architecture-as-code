@@ -1,0 +1,315 @@
+.reactflow-wrapper {
+    height: 100vh;
+    width: 100%;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.react-flow__node {
+    border: 2px solid #e2e8f0;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 12px;
+    padding: 16px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    text-align: center;
+    min-width: 220px;
+    word-wrap: break-word;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.react-flow__node:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.react-flow__node.selected {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border-color: #3b82f6;
+    border-width: 3px;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 10px 25px -3px rgba(59, 130, 246, 0.2);
+    transform: translateY(-2px) scale(1.02);
+}
+
+.react-flow__node[data-nodetype="group"] {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px dashed #94a3b8;
+    border-radius: 16px;
+    padding: 20px;
+    cursor: move;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.react-flow__node[data-nodetype="group"]:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #64748b;
+    transform: scale(1.005);
+}
+
+.react-flow__node[data-nodetype="group"].selected {
+    border-color: #3b82f6;
+    border-width: 3px;
+    background: rgba(59, 130, 246, 0.05);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 12px 40px rgba(59, 130, 246, 0.15);
+    transform: scale(1.01);
+}
+
+.group-node {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    cursor: move;
+    backdrop-filter: blur(16px);
+}
+
+.group-node.selected {
+    transform: scale(1.02);
+}
+
+/* Enhanced specific styles for different relationship types */
+.group-node.composed-of {
+    box-shadow: 0 8px 32px rgba(74, 144, 226, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.08) 0%, rgba(74, 144, 226, 0.04) 100%);
+}
+
+.group-node.deployed-in {
+    box-shadow: 0 8px 32px rgba(34, 139, 34, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(34, 139, 34, 0.08) 0%, rgba(34, 139, 34, 0.04) 100%);
+}
+
+.group-node.contains {
+    box-shadow: 0 8px 32px rgba(255, 140, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(255, 140, 0, 0.08) 0%, rgba(255, 140, 0, 0.04) 100%);
+}
+
+.group-node.default {
+    box-shadow: 0 8px 32px rgba(128, 128, 128, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(128, 128, 128, 0.08) 0%, rgba(128, 128, 128, 0.04) 100%);
+}
+
+/* Enhanced hover effects with smooth animations */
+.group-node:hover {
+    transform: scale(1.008);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.group-node.selected:hover {
+    transform: scale(1.025);
+}
+
+/* Add subtle animation for group node labels */
+.group-node > div:first-child {
+    animation: subtle-pulse 3s ease-in-out infinite;
+}
+
+@keyframes subtle-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.95; }
+}
+
+.react-flow__edge {
+    stroke: #64748b;
+    stroke-width: 2px;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.react-flow__edge:hover {
+    stroke-width: 3px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+}
+
+.react-flow__edge.selected {
+    stroke: #3b82f6;
+    stroke-width: 4px;
+    filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.3));
+    animation: edge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes edge-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+.react-flow__edge-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 6px 12px;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    line-height: 1.2;
+    text-align: center;
+    max-width: 200px;
+    word-break: break-word;
+}
+
+/* Enhanced handles with better visibility and styling */
+.react-flow__handle {
+    width: 12px;
+    height: 12px;
+    border: 2px solid white;
+    border-radius: 50%;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.7;
+    pointer-events: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.react-flow__handle:hover {
+    opacity: 1;
+    transform: scale(1.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Hide handles on group nodes for cleaner appearance */
+.react-flow__node[data-nodetype="group"] .react-flow__handle {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.react-flow__controls {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(16px);
+    padding: 4px;
+}
+
+.react-flow__controls button {
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: #64748b;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 2px;
+}
+
+.react-flow__controls button:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    transform: scale(1.05);
+}
+
+.react-flow__minimap {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(16px);
+    overflow: hidden;
+}
+
+.react-flow__minimap-mask {
+    fill: rgba(59, 130, 246, 0.2);
+    stroke: #3b82f6;
+    stroke-width: 2;
+}
+
+.graph-title {
+    z-index: 1000;
+    padding: 1rem 1.5rem;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(16px);
+    max-width: 300px;
+}
+
+.title {
+    font-weight: 700;
+    color: #1e293b;
+    font-size: 1.1rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.type {
+    margin-top: 8px;
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.description {
+    margin-top: 8px;
+    color: #374151;
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+/* Add custom node type styles */
+.custom-node {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.custom-node.service {
+    animation: service-glow 4s ease-in-out infinite;
+}
+
+.custom-node.database {
+    animation: database-pulse 3s ease-in-out infinite;
+}
+
+.custom-node.api {
+    animation: api-shimmer 5s ease-in-out infinite;
+}
+
+@keyframes service-glow {
+    0%, 100% { filter: brightness(1); }
+    50% { filter: brightness(1.05); }
+}
+
+@keyframes database-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.01); }
+}
+
+@keyframes api-shimmer {
+    0%, 100% { box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4); }
+    50% { box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6); }
+}
+
+/* Enhanced background */
+.react-flow__background {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.react-flow__background circle {
+    fill: rgba(100, 116, 139, 0.4);
+}
+
+/* Enhanced scrollbar for webkit browsers */
+.reactflow-wrapper::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.reactflow-wrapper::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+.reactflow-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(100, 116, 139, 0.3);
+    border-radius: 4px;
+}
+
+.reactflow-wrapper::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 116, 139, 0.5);
+}

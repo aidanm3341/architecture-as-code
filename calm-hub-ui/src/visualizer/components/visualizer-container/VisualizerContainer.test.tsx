@@ -1,9 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { VisualizerContainer } from './VisualizerContainer.js';
-import { CytoscapeNode, Edge } from '../../contracts/contracts.js';
+import { ReactFlowNode, ReactFlowEdge } from '../../contracts/contracts.js';
 import { SidebarProps } from '../sidebar/Sidebar.js';
-import { CytoscapeRendererProps } from '../cytoscape-renderer/CytoscapeRenderer.js';
+import { ReactFlowRendererProps } from '../reactflow-renderer/ReactFlowRenderer.js';
 
 vi.mock('../sidebar/Sidebar.js', () => ({
     Sidebar: ({ closeSidebar }: SidebarProps) => (
@@ -13,13 +13,13 @@ vi.mock('../sidebar/Sidebar.js', () => ({
     ),
 }));
 
-vi.mock('../cytoscape-renderer/CytoscapeRenderer.js', () => ({
-    CytoscapeRenderer: ({
+vi.mock('../reactflow-renderer/ReactFlowRenderer.js', () => ({
+    ReactFlowRenderer: ({
         nodeClickedCallback,
         edgeClickedCallback,
         nodes,
         edges,
-    }: CytoscapeRendererProps) => (
+    }: ReactFlowRendererProps) => (
         <div>
             <button data-testid="node" onClick={() => nodeClickedCallback(nodes[0]['data'])}>
                 Node
@@ -39,6 +39,7 @@ describe('VisualizerContainer', () => {
                 isRelationshipDescActive={false}
                 nodes={[]}
                 edges={[]}
+                calmKey="test-key"
             />
         );
 
@@ -53,6 +54,7 @@ describe('VisualizerContainer', () => {
                 isRelationshipDescActive={false}
                 nodes={[]}
                 edges={[]}
+                calmKey="test-key"
             />
         );
 
@@ -67,6 +69,7 @@ describe('VisualizerContainer', () => {
                 isRelationshipDescActive={false}
                 nodes={[]}
                 edges={[]}
+                calmKey="test-key"
             />
         );
 
@@ -74,7 +77,7 @@ describe('VisualizerContainer', () => {
     });
 
     it('shows Sidebar when a node is clicked and closes it', () => {
-        const nodes: CytoscapeNode[] = [
+        const nodes: ReactFlowNode[] = [
             {
                 data: {
                     description: '',
@@ -84,11 +87,12 @@ describe('VisualizerContainer', () => {
                     parent: undefined,
                     interfaces: undefined,
                     controls: undefined,
-                    cytoscapeProps: {
+                    reactFlowProps: {
                         labelWithDescription: '',
                         labelWithoutDescription: '',
                     },
                 },
+                position: { x: 0, y: 0 },
             },
         ];
 
@@ -98,6 +102,7 @@ describe('VisualizerContainer', () => {
                 isRelationshipDescActive={false}
                 nodes={nodes}
                 edges={[]}
+                calmKey="test-key"
             />
         );
 
@@ -110,7 +115,7 @@ describe('VisualizerContainer', () => {
     });
 
     it('shows Sidebar when an edge is clicked and closes it', () => {
-        const edges: Edge[] = [
+        const edges: ReactFlowEdge[] = [
             {
                 data: {
                     id: 'a',
@@ -127,6 +132,7 @@ describe('VisualizerContainer', () => {
                 isRelationshipDescActive={true}
                 nodes={[]}
                 edges={edges}
+                calmKey="test-key"
             />
         );
 

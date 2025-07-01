@@ -1,7 +1,7 @@
-import cytoscape from 'cytoscape';
 import { CalmInterfaceSchema } from '@finos/calm-shared/src/types/core-types.js';
 import { CalmControlsSchema } from '@finos/calm-shared/src/types/control-types.js';
 
+// Legacy Cytoscape types for backward compatibility
 export type CytoscapeNode = {
     classes?: string;
     data: CytoscapeNodeData & {
@@ -22,6 +22,39 @@ export type CytoscapeNodeData = {
     parent?: string;
 };
 
+// ReactFlow types
+export type ReactFlowNode = {
+    data: ReactFlowNodeData & {
+        reactFlowProps: {
+            labelWithDescription: string;
+            labelWithoutDescription: string;
+        };
+    };
+    position?: { x: number; y: number };
+};
+
+export type ReactFlowNodeData = {
+    id: string;
+    description: string;
+    type: string;
+    name: string;
+    interfaces?: CalmInterfaceSchema[];
+    controls?: CalmControlsSchema;
+    parent?: string;
+};
+
+export type ReactFlowEdge = {
+    data: {
+        id: string;
+        label: string;
+        source: string;
+        target: string;
+        relationshipType?: string;
+        [idx: string]: string | undefined;
+    };
+};
+
+// Shared Edge type (works for both Cytoscape and ReactFlow)
 export type Edge = {
     data: {
         id: string;
@@ -32,20 +65,8 @@ export type Edge = {
     };
 };
 
-export type BoundingBox = cytoscape.BoundingBox12 & cytoscape.BoundingBoxWH;
-
-export type IdAndBoundingBox = {
-    nodeId: string;
-    boundingBox: BoundingBox;
-};
-
-export type NodeLayoutViolations = {
-    shouldBeInside: IdAndBoundingBox[];
-    shouldBeOutside: IdAndBoundingBox[];
-    nodeBoundingBox: BoundingBox;
-};
-
 export type IdAndPosition = {
-    nodeId: string;
-    position: cytoscape.Position;
+    nodeId?: string;
+    id?: string;
+    position: { x: number; y: number };
 };

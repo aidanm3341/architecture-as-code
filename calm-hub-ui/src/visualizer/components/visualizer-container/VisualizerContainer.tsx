@@ -1,14 +1,14 @@
 import { useCallback, useState } from 'react';
-import { CytoscapeNode, Edge } from '../../contracts/contracts.js';
+import { ReactFlowNode, ReactFlowEdge } from '../../contracts/contracts.js';
 import { Sidebar } from '../sidebar/Sidebar.js';
-import { CytoscapeRenderer } from '../cytoscape-renderer/CytoscapeRenderer.js';
+import { ReactFlowRenderer } from '../reactflow-renderer/ReactFlowRenderer.js';
 
 interface VisualizerContainerProps {
     title?: string;
     isNodeDescActive: boolean;
     isRelationshipDescActive: boolean;
-    nodes: CytoscapeNode[];
-    edges: Edge[];
+    nodes: ReactFlowNode[];
+    edges: ReactFlowEdge[];
     calmKey: string;
 }
 
@@ -20,21 +20,21 @@ export function VisualizerContainer({
     isNodeDescActive,
     calmKey,
 }: VisualizerContainerProps) {
-    const [selectedItem, setSelectedItem] = useState<CytoscapeNode['data'] | Edge['data'] | null>(
+    const [selectedItem, setSelectedItem] = useState<ReactFlowNode['data'] | ReactFlowEdge['data'] | null>(
         null
     );
 
-    const entityClickedCallback = useCallback((x: CalmNode['data'] | Edge['data']) => setSelectedItem(x), []);
+    const entityClickedCallback = useCallback((x: ReactFlowNode['data'] | ReactFlowEdge['data']) => setSelectedItem(x), []);
 
     return (
         <div className="relative flex m-auto border" data-testid="visualizer-container">
             {title && (
-                <div className="graph-title absolute m-5 bg-accent shadow-md">
+                <div className="graph-title absolute m-5 bg-accent shadow-md z-10">
                     <span className="text-m font-thin text-primary-content">Architecture: </span>
                     <span className="text-m font-semibold text-primary-content">{title}</span>
                 </div>
             )}
-            <CytoscapeRenderer
+            <ReactFlowRenderer
                 isNodeDescActive={isNodeDescActive}
                 isRelationshipDescActive={isRelationshipDescActive}
                 nodes={nodes}
@@ -46,9 +46,9 @@ export function VisualizerContainer({
             {selectedItem && (
                 <Sidebar
                     selectedData={(() => {
-                        // Note: assigning cytoscapeProps to undefined, then gets rendered in the sidebar JSON rederer.
+                        // Note: remove reactFlowProps from the data before passing to sidebar
                         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                        const { cytoscapeProps, ...nodeData } = selectedItem;
+                        const { reactFlowProps, ...nodeData } = selectedItem;
                         return nodeData;
                     })()}
                     closeSidebar={() => setSelectedItem(null)}

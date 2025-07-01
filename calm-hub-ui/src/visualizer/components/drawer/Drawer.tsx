@@ -11,7 +11,7 @@ import {
     CALMConnectsRelationship,
     CALMInteractsRelationship,
 } from '../../../../../shared/src/types.js';
-import { CytoscapeNode, Edge } from '../../contracts/contracts.js';
+import { ReactFlowNode, ReactFlowEdge } from '../../contracts/contracts.js';
 import { VisualizerContainer } from '../visualizer-container/VisualizerContainer.js';
 import { Data } from '../../../model/calm.js';
 
@@ -101,7 +101,7 @@ export function Drawer({
     isNodeDescActive,
     data,
 }: DrawerProps) {
-    const [selectedNode, setSelectedNode] = useState<CytoscapeNode | null>(null);
+    const [selectedNode, setSelectedNode] = useState<ReactFlowNode | null>(null);
 
     function closeSidebar() {
         setSelectedNode(null);
@@ -111,24 +111,27 @@ export function Drawer({
         return `${node.name}\n[${node['node-type']}]`;
     }
 
-    function getNodes(): CytoscapeNode[] {
+    function getNodes(): ReactFlowNode[] {
         if (!calmInstance || !calmInstance.relationships) return [];
 
         const composedOfRelationships = getComposedOfRelationships(calmInstance);
         const deployedInRelationships = getDeployedInRelationships(calmInstance);
 
         return (calmInstance.nodes ?? []).map((node) => {
-            const newData: CytoscapeNode = {
-                classes: 'node',
+            const newData: ReactFlowNode = {
                 data: {
                     id: node['unique-id'],
                     name: node.name,
                     description: node.description,
                     type: node['node-type'],
-                    cytoscapeProps: {
+                    reactFlowProps: {
                         labelWithDescription: `${generateDisplayPlaceHolderWithoutDesc(node)}\n\n${node.description}\n`,
                         labelWithoutDescription: `${generateDisplayPlaceHolderWithoutDesc(node)}`,
                     },
+                },
+                position: {
+                    x: Math.random() * 500,
+                    y: Math.random() * 500,
                 },
             };
 
@@ -142,10 +145,6 @@ export function Drawer({
 
             const composedOfRel = composedOfRelationships[node['unique-id']];
             const deployedInRel = deployedInRelationships[node['unique-id']];
-
-            if (composedOfRel?.type === 'parent' || deployedInRel?.type === 'parent') {
-                newData.classes = 'group';
-            }
 
             const parentId =
                 composedOfRel?.type === 'child' && composedOfRel.parent
@@ -161,7 +160,7 @@ export function Drawer({
         });
     }
 
-    function getEdges(): Edge[] {
+    function getEdges(): ReactFlowEdge[] {
         if (!calmInstance || !calmInstance.relationships) return [];
 
         return calmInstance.relationships
@@ -174,8 +173,9 @@ export function Drawer({
                             label: relationship.description || '',
                             source: relationship['relationship-type'].interacts.actor,
                             target: relationship['relationship-type'].interacts.nodes[0],
+                            relationshipType: 'interacts-with',
                         },
-                    };
+                    } as ReactFlowEdge;
                 }
                 if (isConnects(relationship)) {
                     const source = relationship['relationship-type'].connects.source.node;
@@ -186,11 +186,13 @@ export function Drawer({
                             label: relationship.description || '',
                             source,
                             target,
+                            relationshipType: 'connects-to',
                         },
-                    };
+                    } as ReactFlowEdge;
                 }
+                return undefined;
             })
-            .filter((edge): edge is Edge => edge !== undefined);
+            .filter((edge): edge is ReactFlowEdge => edge !== undefined);
     }
 
     function createStorageKey(title: string, data?: Data): string {
