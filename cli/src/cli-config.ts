@@ -23,11 +23,11 @@ export async function loadCliConfig(): Promise<CLIConfig | null> {
         return parsed;
     }
     catch (err) {
-        if (err.code === 'ENOENT') {
+        if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
             logger.debug('No config file found at ' + configFilePath);
             return null;
         }
-        logger.error('Unexpected error loading user config: ', err);
+        logger.error('Unexpected error loading user config: ' + (err instanceof Error ? err.message : String(err)));
         return null;
     }
 }

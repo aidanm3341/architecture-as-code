@@ -58,7 +58,7 @@ function Hub() {
         } else if (calmType === 'Architectures') {
             fetchArchitectureIDs(currentResources.namespace!, setValues);
         } else if (calmType === 'ADRs') {
-            adrService.fetchAdrIDs(currentResources.namespace!).then((res) => setValues(res));
+            adrService.fetchAdrIDs(currentResources.namespace!).then((res) => setValues(res.map(id => id.toString())));
         }
         setData(undefined);
         setAdrData(undefined);
@@ -76,7 +76,7 @@ function Hub() {
         } else if (currentResources.calmType === 'ADRs') {
             adrService
                 .fetchAdrRevisions(currentResources.namespace!, selectedID)
-                .then((res) => setValues(res));
+                .then((res) => setValues(res.map(revision => revision.toString())));
         }
     }
 

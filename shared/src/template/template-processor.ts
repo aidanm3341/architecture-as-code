@@ -43,7 +43,7 @@ export class TemplateProcessor {
 
             this.validateConfig(config);
 
-            const transformer = await this.loadTransformer(config.transformer, resolvedBundlePath);
+            const transformer = await this.loadTransformer(config.transformer ?? '', resolvedBundlePath);
 
             const calmJsonDereferenced = await calmResolver.dereferenceCalmDoc(calmJson);
             const transformedModel = transformer.getTransformedModel(calmJsonDereferenced);
@@ -54,8 +54,9 @@ export class TemplateProcessor {
 
             logger.info('\n✅ Template Generation Completed!');
         } catch (error) {
-            logger.error(`❌ Error generating template: ${error.message}`);
-            throw new Error(`❌ Error generating template: ${error.message}`);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            logger.error(`❌ Error generating template: ${errorMessage}`);
+            throw new Error(`❌ Error generating template: ${errorMessage}`);
         }
     }
 
@@ -142,8 +143,9 @@ export class TemplateProcessor {
             }
             return new TransformerClass();
         } catch (error) {
-            logger.error(`❌ Error loading transformer: ${error.message}`);
-            throw new Error(`❌ Error loading transformer: ${error.message}`);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            logger.error(`❌ Error loading transformer: ${errorMessage}`);
+            throw new Error(`❌ Error loading transformer: ${errorMessage}`);
         }
     }
 }

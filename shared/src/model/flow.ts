@@ -22,9 +22,9 @@ export class CalmFlow {
             data.name,
             data.description,
             data.transitions.map(CalmFlowTransition.fromJson),
-            data['requirement-url'],
-            CalmControl.fromJson(data.controls),
-            CalmMetadata.fromJson(data.metadata)
+            data['requirement-url'] || '',
+            data.controls ? CalmControl.fromJson(data.controls) : [],
+            data.metadata ? CalmMetadata.fromJson(data.metadata) : new CalmMetadata({})
         );
     }
 }

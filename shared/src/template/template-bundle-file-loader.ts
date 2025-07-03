@@ -37,8 +37,9 @@ export class TemplateBundleFileLoader {
             logger.info(`✅ Successfully loaded template bundle: ${rawConfig.name}`);
             return rawConfig as IndexFile;
         } catch (error) {
-            logger.error(`❌ Error reading index.json: ${error.message}`);
-            throw new Error(`Failed to parse index.json: ${error.message}`);
+            const err = error as Error;
+            logger.error(`❌ Error reading index.json: ${err.message}`);
+            throw new Error(`Failed to parse index.json: ${err.message}`);
         }
     }
 

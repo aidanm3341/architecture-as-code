@@ -35,7 +35,8 @@ export class NetworkAddressableValidator {
                     result.isSchemaImplementation = this.isJsonSchemaImplementation(doc);
                 }
             } catch (err) {
-                result.error = err.message;
+                const error = err as Error;
+                result.error = error.message;
                 result.isSchemaDefinition = false;
                 result.isSchemaImplementation = false;
             }

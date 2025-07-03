@@ -44,7 +44,7 @@ type ErrorName = 'OPERATION_NOT_IMPLEMENTED' | 'UNKNOWN';
 export class DocumentLoadError extends Error {
     name: ErrorName;
     message: string;
-    cause: Error;
+    cause?: Error;
 
     constructor({
         name, 
@@ -55,7 +55,7 @@ export class DocumentLoadError extends Error {
         message: string;
         cause?: Error;
     }) {
-        super();
+        super(message);
         this.name = name;
         this.message = message;
         this.cause = cause;

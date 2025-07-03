@@ -11,7 +11,8 @@ export function extractNetworkAddressables(jsonString: string): AddressableEntry
     try {
         data = JSON.parse(jsonString);
     } catch (err) {
-        throw new Error(`Invalid JSON string provided: ${err.message}`);
+        const error = err as Error;
+        throw new Error(`Invalid JSON string provided: ${error.message}`);
     }
     const results: AddressableEntry[] = [];
     traverse(data, 'root', results);

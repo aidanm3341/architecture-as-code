@@ -63,7 +63,7 @@ export class CalmNodeInterface {
     constructor(public node: string, public interfaces: string[]) {}
 
     static fromJson(data: CalmNodeInterfaceSchema): CalmNodeInterface {
-        return new CalmNodeInterface(data.node, data.interfaces);
+        return new CalmNodeInterface(data.node, data.interfaces || []);
     }
 }
 

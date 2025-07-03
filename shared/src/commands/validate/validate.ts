@@ -61,11 +61,17 @@ export function formatOutput(
 function buildAjv2020(schemaDirectory: SchemaDirectory, debug: boolean): Ajv2020 {
     const strictType = debug ? 'log' : false;
     return new Ajv2020({
-        strict: strictType, allErrors: true, loadSchema: async (schemaId) => {
+        strict: strictType, allErrors: true, loadSchema: async (schemaId: string) => {
             try {
-                return schemaDirectory.getSchema(schemaId);
+                const schema = schemaDirectory.getSchema(schemaId);
+                if (!schema) {
+                    throw new Error(`Schema not found: ${schemaId}`);
+                }
+                return schema;
             } catch (error) {
-                console.error(`Error fetching schema: ${error.message}`);
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                console.error(`Error fetching schema: ${errorMessage}`);
+                throw error;
             }
         }
     });
@@ -144,7 +150,8 @@ export async function validate(
             throw new Error('You must provide at least an architecture or a pattern');
         }
     } catch (error) {
-        logger.error('An error occured:'+ error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        logger.error('An error occured:'+ errorMessage);
         throw error;
     }
 }
@@ -177,12 +184,12 @@ async function validateArchitectureAgainstPattern(jsonSchemaArchitectureLocation
     let errors = spectralResult.errors;
     const warnings = spectralResult.warnings;
 
-    let jsonSchemaValidations = [];
+    let jsonSchemaValidations: ValidationOutput[] = [];
 
     if (!validateSchema(jsonSchemaArchitecture)) {
         logger.debug(`JSON Schema validation raw output: ${prettifyJson(validateSchema.errors)}`);
         errors = true;
-        jsonSchemaValidations = convertJsonSchemaIssuesToValidationOutputs(validateSchema.errors);
+        jsonSchemaValidations = convertJsonSchemaIssuesToValidationOutputs(validateSchema.errors ?? []);
     }
 
     return new ValidationOutcome(jsonSchemaValidations, spectralResult.spectralIssues, errors, warnings);
@@ -207,13 +214,14 @@ async function validatePatternOnly(jsonSchemaLocation: string, metaSchemaPath: s
     
     let errors = spectralValidationResults.errors;
     const warnings = spectralValidationResults.warnings;
-    const jsonSchemaErrors = [];
+    const jsonSchemaErrors: ValidationOutput[] = [];
 
     try {
         await ajv.compileAsync(patternSchema); 
     } catch (error) {
         errors = true;
-        jsonSchemaErrors.push(new ValidationOutput('json-schema', 'error', error.message, '/'));
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        jsonSchemaErrors.push(new ValidationOutput('json-schema', 'error', errorMessage, '/'));
     }
 
     return new ValidationOutcome(jsonSchemaErrors, spectralValidationResults.spectralIssues, errors, warnings);// added spectral to return object
@@ -243,7 +251,7 @@ function getRuleNamesFromRuleset(ruleset: RulesetDefinition): string[] {
     return Object.keys((ruleset as { rules: Record<string, unknown> }).rules);
 }
 
-function prettifyJson(json) {
+function prettifyJson(json: unknown) {
     return JSON.stringify(json, null, 4);
 }
 
@@ -261,9 +269,9 @@ export function convertJsonSchemaIssuesToValidationOutputs(jsonSchemaIssues: Err
     return jsonSchemaIssues.map(issue => new ValidationOutput(
         'json-schema',
         'error',
-        issue.message,
-        issue.instancePath,
-        issue.schemaPath
+        issue.message ?? 'Unknown error',
+        issue.instancePath ?? '',
+        issue.schemaPath ?? ''
     ));
 }
 

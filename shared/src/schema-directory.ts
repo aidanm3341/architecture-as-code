@@ -63,11 +63,12 @@ export class SchemaDirectory {
             // schemaDirectory will return an empty schema in this case, so this code should never trigger.
             throw Error('schema missing!');
         }
-        if (!definition['$ref']) {
+        const definitionRecord = definition as Record<string, unknown>;
+        if (!definitionRecord['$ref']) {
             this.logger.debug('Reached a definition with no ref, terminating recursive lookup.');
             return this.qualifyLocalReferences(definition, newSchemaId);
         }
-        const newRef: string = definition['$ref'];
+        const newRef: string = definitionRecord['$ref'] as string;
         if (visitedDefinitions.includes(newRef)) {
             this.logger.warn('Circular reference detected. Terminating reference lookup. Visited definitions: ' + visitedDefinitions);
             return definition;
@@ -142,13 +143,13 @@ export class SchemaDirectory {
                     if (err.name === 'OPERATION_NOT_IMPLEMENTED') {
                         const registered = this.getLoadedSchemas();
                         this.logger.warn(`Schema with $id ${schemaId} not found. Returning empty object. Registered schemas: ${registered}`);
-                        return undefined;
+                        return {};
                     } 
                 }
                 throw err;
             }
         }
-        return this.schemas.get(schemaId);
+        return this.schemas.get(schemaId) || {};
     }
 
     public async getPattern(patternId: string): Promise<object> {

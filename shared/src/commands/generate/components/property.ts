@@ -27,11 +27,11 @@ export function getBooleanPlaceholder(name: string): string {
  * @param detail The detail from the object to instantiate
  * @returns Either the value or the object described by the 'const' property.
  */
-export function getConstValue(detail: JsonSchema) : string | object {
+export function getConstValue(detail: JsonSchema) : string | object | undefined {
     return detail.const;
 }
 
-export function getPropertyValue(keyName: string, detail: JsonSchema): string | string[] | number | object {
+export function getPropertyValue(keyName: string, detail: JsonSchema): string | string[] | number | object | undefined {
     // if both const and type are defined, prefer const
     if (detail.const) {
         return detail.const;
@@ -66,7 +66,11 @@ export function getPropertyValue(keyName: string, detail: JsonSchema): string | 
 }
 
 export function getEnumPlaceholder(ref: string): string {
-    const refName = /[^/#]*$/.exec(ref)[0];
+    const match = /[^/#]*$/.exec(ref);
+    if (!match) {
+        throw new Error(`Unable to extract reference name from: ${ref}`);
+    }
+    const refName = match[0];
     const refPlaceholder = refName.toUpperCase().replaceAll('-', '_');
     return `[[ ENUM_${refPlaceholder} ]]`;
 }

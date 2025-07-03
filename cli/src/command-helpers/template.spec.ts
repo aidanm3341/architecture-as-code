@@ -40,7 +40,7 @@ describe('getUrlToLocalFileMap', () => {
         });
         const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-        const processExitSpy = vi.spyOn(process, 'exit').mockImplementation((code?: number) => {
+        const processExitSpy = vi.spyOn(process, 'exit').mockImplementation((code?: string | number | null | undefined) => {
             throw new Error(`process.exit: ${code}`);
         });
 

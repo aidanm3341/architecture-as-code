@@ -2,12 +2,12 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { mkdirp } from 'mkdirp';
 
-import { CalmChoice, selectChoices } from './components/options.js';
+import { CalmChoice, selectChoices, type SchemaPropertyBase } from './components/options.js';
 import { instantiate } from './components/instantiate';
 import { initLogger } from '../../logger.js';
 import { SchemaDirectory } from '../../schema-directory.js';
 
-export async function runGenerate(pattern: object, outputPath: string, debug: boolean, schemaDirectory: SchemaDirectory, chosenChoices?: CalmChoice[]): Promise<void> {
+export async function runGenerate(pattern: SchemaPropertyBase, outputPath: string, debug: boolean, schemaDirectory: SchemaDirectory, chosenChoices?: CalmChoice[]): Promise<void> {
     const logger = initLogger(debug, 'calm-generate');
     logger.info('Generating a CALM architecture...');
     try {
@@ -23,7 +23,10 @@ export async function runGenerate(pattern: object, outputPath: string, debug: bo
         fs.writeFileSync(outputPath, output);
         logger.info(`Successfully generated architecture to [${outputPath}]`);
     } catch (err) {
-        logger.error('Error while generating architecture from pattern: ' + err.message);
-        logger.debug(err.stack);
+        const error = err as Error;
+        logger.error('Error while generating architecture from pattern: ' + error.message);
+        if (error.stack) {
+            logger.debug(error.stack);
+        }
     }
 }

@@ -1,9 +1,9 @@
-import { CalmControlsSchema } from './types/control-types';
+import { CalmControlsSchema } from './types/control-types.js';
 import {
     CalmAuthenticationSchema,
     CalmProtocolSchema,
-} from './types/core-types';
-import { CalmMetadataSchema } from './types/metadata-types';
+} from './types/core-types.js';
+import { CalmMetadataSchema } from './types/metadata-types.js';
 
 export interface CALMInteractsRelationship {
     'relationship-type': {

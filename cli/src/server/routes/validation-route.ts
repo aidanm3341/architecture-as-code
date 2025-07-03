@@ -1,10 +1,10 @@
 import {SchemaDirectory, initLogger, validate} from '@finos/calm-shared';
+import { Logger } from '@finos/calm-shared/dist/logger';
 import { Router, Request, Response } from 'express';
 import { promises as fs } from 'fs';
 import path from 'path';
 import os from 'os';
 import { v4 as uuidv4 } from 'uuid';
-import winston from 'winston';
 import { ValidationOutcome } from '@finos/calm-shared';
 import rateLimit from 'express-rate-limit';
 
@@ -12,7 +12,7 @@ export class ValidationRouter {
 
     private schemaDirectoryPath: string;
     private schemaDirectory: SchemaDirectory;
-    private logger: winston.Logger;
+    private logger: Logger;
 
     constructor(router: Router, schemaDirectoryPath: string, schemaDirectory: SchemaDirectory, debug: boolean = false) {
         const limiter = rateLimit({
@@ -70,7 +70,8 @@ export class ValidationRouter {
             const outcome = await validate(tempInstantiation, tempPattern, this.schemaDirectoryPath, true);
             return res.status(201).type('json').send(outcome);
         } catch (error) {
-            return res.status(500).type('json').send(new ErrorResponse(error.message));
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            return res.status(500).type('json').send(new ErrorResponse(errorMessage));
         } finally {
             [tempInstantiation, tempPattern].forEach(element => {
                 fs.unlink(element).catch((reason) => {
@@ -96,5 +97,5 @@ class ErrorResponse {
 };
 
 class ValidationRequest {
-    architecture: string;
+    architecture!: string;
 }

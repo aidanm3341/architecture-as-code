@@ -29,7 +29,7 @@ export class CalmRelationship {
             data['unique-id'],
             CalmRelationship.deriveRelationshipType(data['relationship-type']),
             data.metadata ? CalmMetadata.fromJson(data.metadata) : new CalmMetadata({}),
-            CalmControl.fromJson(data.controls),
+            data.controls ? CalmControl.fromJson(data.controls) : [],
             data.description,
             data.protocol,
             data.authentication

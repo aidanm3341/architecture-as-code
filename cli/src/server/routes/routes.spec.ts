@@ -31,7 +31,8 @@ describe('CLIServerRoutes', () => {
 
     beforeEach(() => {
         schemaDirectoryPath = '/path/to/schema';
-        cliServerRoutes = new CLIServerRoutes(schemaDirectoryPath);
+        const mockSchemaDirectory = {} as any; // Mock SchemaDirectory for test
+        cliServerRoutes = new CLIServerRoutes(schemaDirectoryPath, mockSchemaDirectory);
         mockRouter = cliServerRoutes.router;
     });
 

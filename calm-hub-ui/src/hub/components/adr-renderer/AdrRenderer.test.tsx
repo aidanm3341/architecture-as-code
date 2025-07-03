@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { AdrRenderer } from '../../../hub/components/adr-renderer/AdrRenderer.js';
-import { Option } from '../../../model/adr/option.js';
+import { CalmOption as Option } from '@finos/calm-shared/src/model/adr.js';
 import { Adr } from '../../../model/calm.js';
-import { AdrStatus } from '../../../model/adr/adr-status/adrStatus.js';
+import { CalmAdrStatus as AdrStatus } from '@finos/calm-shared/src/types/adr-types.js';
 
 describe('ADR Renderer', () => {
     const optionOne: Option = {

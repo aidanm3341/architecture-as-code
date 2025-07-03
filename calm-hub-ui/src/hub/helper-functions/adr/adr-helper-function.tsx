@@ -1,9 +1,7 @@
-import { Option } from '../../../model/adr/option.js';
-import { Link } from '../../../model/adr/link.js';
+import { CalmOption as Option, CalmLink as Link, CalmAdrDecision as Decision } from '@finos/calm-shared/src/model/adr.js';
 import Markdown from 'react-markdown';
 import './adr-helper-function.css';
-import { Decision } from '../../../model/adr/decision.js';
-import { AdrStatus } from '../../../model/adr/adr-status/adrStatus.js';
+import { CalmAdrStatus as AdrStatus } from '@finos/calm-shared/src/types/adr-types.js';
 
 export function StyleTitle(props: { title: string }) {
     return (

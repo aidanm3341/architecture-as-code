@@ -1,4 +1,4 @@
-import { CalmChoice, CalmOption, extractOptions } from '@finos/calm-shared/dist/commands/generate/components/options';
+import { CalmChoice, CalmOption, extractOptions, SchemaPropertyBase } from '@finos/calm-shared/dist/commands/generate/components/options';
 import { initLogger } from '@finos/calm-shared';
 import { select, checkbox } from '@inquirer/prompts';
 
@@ -47,11 +47,11 @@ async function getAnswersFromUser(questions: InquirerQuestion[]): Promise<string
     return answers;
 }
 
-export async function promptUserForOptions(pattern: object, debug: boolean = false): Promise<CalmChoice[]> {
+export async function promptUserForOptions(pattern: SchemaPropertyBase, debug: boolean = false): Promise<CalmChoice[]> {
     const logger = initLogger(debug, 'calm-generate-options');
 
     const patternOptions: CalmOption[] = extractOptions(pattern);
-    logger.debug('Pattern options extracted from pattern: [%O]', patternOptions);
+    logger.debug('Pattern options extracted from pattern: ' + JSON.stringify(patternOptions));
             
     const questions = createQuestionsFromPatternOptions(patternOptions);
     const answers: string[] = await getAnswersFromUser(questions);

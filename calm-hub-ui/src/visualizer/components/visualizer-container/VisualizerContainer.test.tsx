@@ -39,6 +39,7 @@ describe('VisualizerContainer', () => {
                 isRelationshipDescActive={false}
                 nodes={[]}
                 edges={[]}
+                calmKey="test-key"
             />
         );
 
@@ -53,6 +54,7 @@ describe('VisualizerContainer', () => {
                 isRelationshipDescActive={false}
                 nodes={[]}
                 edges={[]}
+                calmKey="test-key"
             />
         );
 
@@ -67,6 +69,7 @@ describe('VisualizerContainer', () => {
                 isRelationshipDescActive={false}
                 nodes={[]}
                 edges={[]}
+                calmKey="test-key"
             />
         );
 
@@ -98,6 +101,7 @@ describe('VisualizerContainer', () => {
                 isRelationshipDescActive={false}
                 nodes={nodes}
                 edges={[]}
+                calmKey="test-key"
             />
         );
 
@@ -127,6 +131,7 @@ describe('VisualizerContainer', () => {
                 isRelationshipDescActive={true}
                 nodes={[]}
                 edges={edges}
+                calmKey="test-key"
             />
         );
 

@@ -29,7 +29,7 @@ export default function prettyFormat(validationOutcome: ValidationOutcome): stri
     ];
 
 
-    const tableOutput = stringTable.create(informationObjects);
+    const tableOutput = stringTable(informationObjects);
     returnText += tableOutput;
     returnText += '\n';
     returnText += formatValidations(errorValidations, 'Errors');
@@ -43,7 +43,7 @@ export default function prettyFormat(validationOutcome: ValidationOutcome): stri
 function formatValidations(validations: ValidationOutput[], severity: string): string {
     if (validations.length > 0) {
         let result = `\n${severity}:\n\n`;
-        const tableOutput = stringTable.create(validations);
+        const tableOutput = stringTable(validations);
         result += tableOutput;
         return result;
     }

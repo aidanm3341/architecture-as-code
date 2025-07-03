@@ -31,12 +31,12 @@ export class CalmHubDocumentLoader implements DocumentLoader {
 
     addAxiosDebug() {
         this.ax.interceptors.request.use(request => {
-            console.log('Starting Request', JSON.stringify(request, null, 2));
+            this.logger.debug('Starting Request: ' + JSON.stringify(request, null, 2));
             return request;
         });
 
         this.ax.interceptors.response.use(response => {
-            console.log('Response:', response);
+            this.logger.debug('Response: ' + JSON.stringify(response, null, 2));
             return response;
         });
     }

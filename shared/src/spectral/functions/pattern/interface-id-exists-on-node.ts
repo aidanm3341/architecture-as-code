@@ -1,10 +1,11 @@
 import { JSONPath } from 'jsonpath-plus';
 import { difference } from 'lodash';
+import { RulesetFunctionContext } from '@stoplight/spectral-core';
 
 /**
  * Checks that the input value exists as an interface with matching unique ID defined under a node in the document.
  */
-export function interfaceIdExistsOnNode(input, _, context) {
+export function interfaceIdExistsOnNode(input: any, _: unknown, context: RulesetFunctionContext): Array<{message: string, path: (string | number)[]}>  {
     if (!input || !input.interfaces) {
         return [];
     }
@@ -16,12 +17,21 @@ export function interfaceIdExistsOnNode(input, _, context) {
         }];
     }
 
+    // Type guard for document data
+    if (!context.document?.data || typeof context.document.data !== 'object') {
+        return [];
+    }
+
     const nodeId = input.node;
-    const nodes: object[] = JSONPath({ path: '$.properties.nodes.prefixItems[*]', json: context.document.data });
+    const nodesResult = JSONPath({ path: '$.properties.nodes.prefixItems[*]', json: context.document.data as object });
+    const nodes: object[] = Array.isArray(nodesResult) ? nodesResult : [];
     const node = nodes.find((node) => {
-        const uniqueId: string[] = JSONPath({ path: '$.properties.unique-id.const', json: node });
-        uniqueId.push(...JSONPath({ path: '$.oneOf[*].properties.unique-id.const', json: node }));
-        uniqueId.push(...JSONPath({ path: '$.anyOf[*].properties.unique-id.const', json: node }));
+        const uniqueIdResult = JSONPath({ path: '$.properties.unique-id.const', json: node });
+        const uniqueId: string[] = Array.isArray(uniqueIdResult) ? uniqueIdResult : [];
+        const oneOfResult = JSONPath({ path: '$.oneOf[*].properties.unique-id.const', json: node });
+        const anyOfResult = JSONPath({ path: '$.anyOf[*].properties.unique-id.const', json: node });
+        uniqueId.push(...(Array.isArray(oneOfResult) ? oneOfResult : []));
+        uniqueId.push(...(Array.isArray(anyOfResult) ? anyOfResult : []));
         return uniqueId && uniqueId[0] === nodeId;
     });
     if (!node) {
@@ -32,12 +42,15 @@ export function interfaceIdExistsOnNode(input, _, context) {
     // all of these must be present on the referenced node
     const desiredInterfaces = input.interfaces;
 
-    const nodeInterfaces = JSONPath({ path: '$.properties.interfaces.prefixItems[*].properties.unique-id.const', json: node });
-    nodeInterfaces.push(...JSONPath({ path: '$.oneOf[*].properties.interfaces.prefixItems[*].properties.unique-id.const', json: node }));
-    nodeInterfaces.push(...JSONPath({ path: '$.anyOf[*].properties.interfaces.prefixItems[*].properties.unique-id.const', json: node }));
+    const nodeInterfacesResult = JSONPath({ path: '$.properties.interfaces.prefixItems[*].properties.unique-id.const', json: node });
+    const nodeInterfaces: string[] = Array.isArray(nodeInterfacesResult) ? nodeInterfacesResult : [];
+    const oneOfInterfacesResult = JSONPath({ path: '$.oneOf[*].properties.interfaces.prefixItems[*].properties.unique-id.const', json: node });
+    const anyOfInterfacesResult = JSONPath({ path: '$.anyOf[*].properties.interfaces.prefixItems[*].properties.unique-id.const', json: node });
+    nodeInterfaces.push(...(Array.isArray(oneOfInterfacesResult) ? oneOfInterfacesResult : []));
+    nodeInterfaces.push(...(Array.isArray(anyOfInterfacesResult) ? anyOfInterfacesResult : []));
     if (!nodeInterfaces || nodeInterfaces.length === 0) {
         return [
-            { message: `Node with unique-id ${nodeId} has no interfaces defined, expected interfaces [${desiredInterfaces}]` }
+            { message: `Node with unique-id ${nodeId} has no interfaces defined, expected interfaces [${desiredInterfaces}]`, path: [...context.path] as (string | number)[] }
         ];
     }
 
@@ -47,7 +60,7 @@ export function interfaceIdExistsOnNode(input, _, context) {
     if (missingInterfaces.length === 0) {
         return [];
     }
-    const results = [];
+    const results: Array<{message: string, path: (string | number)[]}> = [];
 
     for (const missing of missingInterfaces) {
         results.push({

@@ -43,7 +43,7 @@ function buildPatternChoice({description, nodes, relationships}: CalmChoice) {
 }
 
 function buildPatternOption(optionType: 'oneOf' | 'anyOf', ...choices: object[]) {
-    const option = {};
+    const option: Record<string, object[]> = {};
     option[optionType] = choices;
     return option;
 }
@@ -158,7 +158,7 @@ describe('Pattern Options', () => {
                 choices: [applicationAtoC, applicationBtoC]
             }];
 
-            expect(extractOptions(pattern)).toEqual(expectedOptions);
+            expect(extractOptions(pattern as any)).toEqual(expectedOptions);
         });
 
         it('should return an anyOf option from a spec', () => {
@@ -177,7 +177,7 @@ describe('Pattern Options', () => {
                 choices: [applicationAtoC, applicationBtoC]
             }];
 
-            expect(extractOptions(pattern)).toEqual(expectedOptions);
+            expect(extractOptions(pattern as any)).toEqual(expectedOptions);
         });
 
         it('should return no options from a spec that contains no options relationship', () => {
@@ -222,7 +222,7 @@ describe('Pattern Options', () => {
                 }
             ];
 
-            expect(extractOptions(pattern)).toEqual(expectedOptions);
+            expect(extractOptions(pattern as any)).toEqual(expectedOptions);
         });
     });
 
@@ -265,7 +265,7 @@ describe('Pattern Options', () => {
                     connectsRelationshipA,
                 ]
             );
-            expect(selectChoices(pattern, choices)).toEqual(expectedPattern);
+            expect(selectChoices(pattern as any, choices)).toEqual(expectedPattern);
         });
 
         it('should not affect a normal pattern', () => {

@@ -3,7 +3,7 @@ import { Option, Command } from 'commander';
 import { version } from '../package.json';
 import { loadJsonFromFile } from './command-helpers/file-input';
 import { promptUserForOptions } from './command-helpers/generate-options';
-import { CalmChoice } from '@finos/calm-shared/dist/commands/generate/components/options';
+import { CalmChoice, SchemaPropertyBase } from '@finos/calm-shared/dist/commands/generate/components/options';
 import { buildDocumentLoader, DocumentLoader, DocumentLoaderOptions } from '@finos/calm-shared/dist/document-loader/document-loader';
 import { loadCliConfig } from './cli-config';
 import { loadPatternFromCalmHub } from './command-helpers/calmhub-input';
@@ -31,14 +31,14 @@ export function setupCLI(program: Command) {
         .option(SCHEMAS_OPTION, 'Path to the directory containing the meta schemas to use.')
         .option(CALMHUB_URL_OPTION, 'URL to CALMHub instance')
         .option(VERBOSE_OPTION, 'Enable verbose logging.', false)
-        .action(async (options) => {
+        .action(async (options: CLIOptions) => {
             const debug = !!options.verbose;
             const docLoaderOpts = await parseDocumentLoaderConfig(options);
             const docLoader = buildDocumentLoader(docLoaderOpts, debug);
             const schemaDirectory = await buildSchemaDirectory(docLoader, debug);
-            const pattern: object = await loadPatternJson(options.pattern, docLoader, debug);
+            const pattern = await loadPatternJson(options.pattern!, docLoader, debug);
             const choices: CalmChoice[] = await promptUserForOptions(pattern, options.verbose);
-            await runGenerate(pattern, options.output, debug, schemaDirectory, choices);
+            await runGenerate(pattern, options.output!, debug, schemaDirectory, choices);
         });
 
     program
@@ -55,7 +55,7 @@ export function setupCLI(program: Command) {
         )
         .option(OUTPUT_OPTION, 'Path location at which to output the generated file.')
         .option(VERBOSE_OPTION, 'Enable verbose logging.', false)
-        .action(async (options) => {
+        .action(async (options: CLIOptions) => {
             const { checkValidateOptions, runValidate } = await import('./command-helpers/validate');
             checkValidateOptions(program, options, PATTERN_OPTION, ARCHITECTURE_OPTION);
             await runValidate(options);
@@ -67,13 +67,13 @@ export function setupCLI(program: Command) {
         .option('-p, --port <port>', 'Port to run the server on', '3000')
         .requiredOption(SCHEMAS_OPTION, 'Path to the directory containing the meta schemas to use.')
         .option(VERBOSE_OPTION, 'Enable verbose logging.', false)
-        .action(async (options) => {
+        .action(async (options: CLIOptions) => {
             const { startServer } = await import('./server/cli-server');
             const debug = !!options.verbose;
             const docLoaderOpts = await parseDocumentLoaderConfig(options);
             const docLoader = buildDocumentLoader(docLoaderOpts, debug);
             const schemaDirectory = await buildSchemaDirectory(docLoader, debug);
-            startServer(options.port, schemaDirectory, debug);
+            startServer(options.port!, options.schemaDirectory!, schemaDirectory, debug);
         });
 
     program
@@ -84,14 +84,14 @@ export function setupCLI(program: Command) {
         .requiredOption('--output <path>', 'Path to output directory')
         .option('--url-to-local-file-mapping <path>', 'Path to mapping file which maps URLs to local paths')
         .option(VERBOSE_OPTION, 'Enable verbose logging.', false)
-        .action(async (options) => {
+        .action(async (options: CLIOptions) => {
             const { getUrlToLocalFileMap } = await import('./command-helpers/template');
             const { TemplateProcessor } = await import('@finos/calm-shared');
             if (options.verbose) {
                 process.env.DEBUG = 'true';
             }
             const localDirectory = getUrlToLocalFileMap(options.urlToLocalFileMapping);
-            const processor = new TemplateProcessor(options.input, options.bundle, options.output, localDirectory);
+            const processor = new TemplateProcessor(options.input!, options.bundle!, options.output!, localDirectory);
             await processor.processTemplate();
         });
 
@@ -102,19 +102,34 @@ export function setupCLI(program: Command) {
         .requiredOption('--output <path>', 'Path to output directory')
         .option('--url-to-local-file-mapping <path>', 'Path to mapping file which maps URLs to local paths')
         .option(VERBOSE_OPTION, 'Enable verbose logging.', false)
-        .action(async (options) => {
+        .action(async (options: CLIOptions) => {
             const { getUrlToLocalFileMap } = await import('./command-helpers/template');
             const { Docifier } = await import('@finos/calm-shared');
             if (options.verbose) {
                 process.env.DEBUG = 'true';
             }
             const localDirectory = getUrlToLocalFileMap(options.urlToLocalFileMapping);
-            const docifier = new Docifier('WEBSITE', options.input, options.output, localDirectory);
+            const docifier = new Docifier('WEBSITE', options.input!, options.output!, localDirectory);
             await docifier.docify();
         });
 }
 
-async function parseDocumentLoaderConfig(options): Promise<DocumentLoaderOptions> {
+interface CLIOptions {
+    verbose?: boolean;
+    schemaDirectory?: string;
+    calmHubUrl?: string;
+    pattern?: string;
+    output?: string;
+    format?: string;
+    architecture?: string;
+    strict?: boolean;
+    port?: string;
+    input?: string;
+    bundle?: string;
+    urlToLocalFileMapping?: string;
+}
+
+async function parseDocumentLoaderConfig(options: CLIOptions): Promise<DocumentLoaderOptions> {
     const logger = initLogger(options.verbose, 'calm-cli');
     if (options.schemaDirectory) {
         return {
@@ -142,7 +157,7 @@ async function parseDocumentLoaderConfig(options): Promise<DocumentLoaderOptions
 
     return {
         loadMode: 'filesystem',
-        schemaDirectoryPath: undefined
+        schemaDirectoryPath: CALM_META_SCHEMA_DIRECTORY
     };
 }
 
@@ -150,12 +165,12 @@ async function buildSchemaDirectory(docLoader: DocumentLoader, debug: boolean): 
     return new SchemaDirectory(docLoader, debug);
 }
 
-async function loadPatternJson(patternAccessor: string, docLoader: DocumentLoader, debug: boolean): Promise<object> {
+async function loadPatternJson(patternAccessor: string, docLoader: DocumentLoader, debug: boolean): Promise<SchemaPropertyBase> {
     try {
         const url = new URL(patternAccessor);
-        return await loadPatternFromCalmHub(url.href, docLoader, debug);
+        return await loadPatternFromCalmHub(url.href, docLoader, debug) as SchemaPropertyBase;
     } catch (_) {
         // If the pattern is not a URL, it must be a file path
-        return await loadJsonFromFile(patternAccessor, debug);
+        return await loadJsonFromFile(patternAccessor, debug) as SchemaPropertyBase;
     }
 }

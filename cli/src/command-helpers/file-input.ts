@@ -13,11 +13,11 @@ export async function loadJsonFromFile(path: string, debug: boolean): Promise<ob
         logger.debug('Loaded json file.');
         return pattern;
     } catch (err) {
-        if (err.code === 'ENOENT') {
+        if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
             logger.error('File not found!');
         } else {
-            logger.error(err);
+            logger.error(err instanceof Error ? err.message : String(err));
         }
-        throw new Error(err);
+        throw new Error(err instanceof Error ? err.message : String(err));
     }
 }

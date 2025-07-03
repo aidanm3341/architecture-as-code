@@ -1,29 +1,46 @@
 
-import { getFormattedOutput, validate, exitBasedOffOfValidationOutcome } from '@finos/calm-shared';
+import { getFormattedOutput, validate, exitBasedOffOfValidationOutcome, OutputFormat } from '@finos/calm-shared';
 import { initLogger } from '@finos/calm-shared';
 import path from 'path';
 import { mkdirp } from 'mkdirp';
 import { writeFileSync } from 'fs';
 import {Command} from 'commander';
 
-export async function runValidate(options) {
+interface ValidateOptions {
+    architecture?: string;
+    pattern?: string;
+    schemaDirectory: string;
+    verbose: boolean;
+    format: OutputFormat;
+    output?: string;
+    strict: boolean;
+}
+
+export async function runValidate(options: ValidateOptions) {
 
     try {
-        const outcome = await validate(options.architecture, options.pattern, options.schemaDirectory, options.verbose);
+        // Either architecture or pattern must be provided (enforced by checkValidateOptions)
+        const architecture = options.architecture || '';
+        const pattern = options.pattern || '';
+        const outcome = await validate(architecture, pattern, options.schemaDirectory, options.verbose);
         const content = getFormattedOutput(outcome, options.format);
         writeOutputFile(options.output, content);
         exitBasedOffOfValidationOutcome(outcome, options.strict);
     }
     catch (err) {
         const logger = initLogger(options.verbose, 'calm-validate');
-        logger.error('An error occurred while validating: ' + err.message);
-        logger.debug(err.stack);
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        const errorStack = err instanceof Error ? err.stack : undefined;
+        logger.error('An error occurred while validating: ' + errorMessage);
+        if (errorStack) {
+            logger.debug(errorStack);
+        }
         process.exit(1);
     }
 }
 
 
-export function writeOutputFile(output: string, validationsOutput: string) {
+export function writeOutputFile(output: string | undefined, validationsOutput: string) {
     if (output) {
         const dirname = path.dirname(output);
         mkdirp.sync(dirname);

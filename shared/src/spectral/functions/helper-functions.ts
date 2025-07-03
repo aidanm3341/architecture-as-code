@@ -1,5 +1,5 @@
 
-export function detectDuplicates(matches, seenIds, messages) {
+export function detectDuplicates(matches: Array<{value: string, pointer: string}>, seenIds: Set<string>, messages: Array<{message: string, path: (string | number)[]}>) {
     for (const match of matches) {
         const id = match['value'];
 
@@ -15,7 +15,7 @@ export function detectDuplicates(matches, seenIds, messages) {
     }
 }
 
-export function numericalPlaceHolder(input, _, context) {
+export function numericalPlaceHolder(input: number, _: unknown, context: {path: (string | number)[]}) {
     if (input == -1) {
         return [{
             message: 'Value was equal to -1 - placeholder property detected',

@@ -15,24 +15,57 @@ export default class TemplateDefaultTransformer implements CalmTemplateTransform
 
     registerTemplateHelpers(): Record<string, (...args: unknown[]) => unknown> {
         return {
-            eq: (a, b) => a === b,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            lookup: (obj, key: any) => obj?.[key],
-            json: (obj) => JSON.stringify(obj, null, 2),
-            instanceOf: (value, className: string) => value?.constructor?.name === className,
-            kebabToTitleCase: (str: string) => str
-                .split('-')
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' '),
-            kebabCase: (str: string) => str
-                .trim()
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')  // Replace non-alphanumeric characters with hyphens
-                .replace(/^-+|-+$/g, ''), // Remove leading or trailing hyphens
-            isObject: (value: unknown) => typeof value === 'object' && value !== null && !Array.isArray(value),
-            isArray: (value: unknown) => Array.isArray(value),
-            join: (arr: unknown[], separator:string = ', ') =>
-                Array.isArray(arr) ? arr.join(separator) : '',
+            eq: (...args: unknown[]) => {
+                const [a, b] = args;
+                return a === b;
+            },
+            lookup: (...args: unknown[]) => {
+                const [obj, key] = args;
+                if (typeof obj === 'object' && obj !== null && typeof key === 'string') {
+                    return (obj as Record<string, unknown>)[key];
+                }
+                return undefined;
+            },
+            json: (...args: unknown[]) => {
+                const [obj] = args;
+                return JSON.stringify(obj, null, 2);
+            },
+            instanceOf: (...args: unknown[]) => {
+                const [value, className] = args;
+                if (typeof className !== 'string') return false;
+                return value?.constructor?.name === className;
+            },
+            kebabToTitleCase: (...args: unknown[]) => {
+                const [str] = args;
+                if (typeof str !== 'string') return '';
+                return str
+                    .split('-')
+                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(' ');
+            },
+            kebabCase: (...args: unknown[]) => {
+                const [str] = args;
+                if (typeof str !== 'string') return '';
+                return str
+                    .trim()
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')  // Replace non-alphanumeric characters with hyphens
+                    .replace(/^-+|-+$/g, ''); // Remove leading or trailing hyphens
+            },
+            isObject: (...args: unknown[]) => {
+                const [value] = args;
+                return typeof value === 'object' && value !== null && !Array.isArray(value);
+            },
+            isArray: (...args: unknown[]) => {
+                const [value] = args;
+                return Array.isArray(value);
+            },
+            join: (...args: unknown[]) => {
+                const [arr, separator = ', '] = args;
+                if (!Array.isArray(arr)) return '';
+                if (typeof separator !== 'string') return arr.join(', ');
+                return arr.join(separator);
+            },
         };
     }
 

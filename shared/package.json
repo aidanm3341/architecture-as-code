@@ -16,6 +16,7 @@
         "test": "vitest run",
         "lint": "eslint src",
         "lint-fix": "eslint src --fix",
+        "typecheck": "tsc --noEmit",
         "dependency-check": "dependency-check --project 'calm-shared' --scan . --out ./dependency-check-report --format ALL --suppression ../.github/node-cve-ignore-list.xml"
     },
     "eslintConfig": {

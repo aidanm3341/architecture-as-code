@@ -33,17 +33,18 @@ export class FileSystemDocumentLoader implements DocumentLoader {
                     // loaded schema can't be used due to having no identifier
                     continue;
                 }
-                const schemaId = schemaDef['$id'];
+                const schemaId = (schemaDef as Record<string, unknown>)['$id'] as string;
                 schemaDirectory.storeDocument(schemaId, 'schema', schemaDef);
                 this.logger.debug(`Loaded schema with ID ${schemaId} from ${schemaPath}.`);
             }
         } catch (err) {
-            if (err.code === 'ENOENT') {
-                this.logger.error('Specified directory not found while loading documents: ' + directoryPath + ', error: ' + err.message);
+            const error = err as NodeJS.ErrnoException;
+            if (error.code === 'ENOENT') {
+                this.logger.error('Specified directory not found while loading documents: ' + directoryPath + ', error: ' + error.message);
             } else {
-                this.logger.error(err);
+                this.logger.error(error.message || String(error));
             }
-            throw err;
+            throw error;
         }
     }
 
@@ -57,18 +58,18 @@ export class FileSystemDocumentLoader implements DocumentLoader {
         });
     }
 
-    private async loadDocument(schemaPath: string): Promise<object> {
+    private async loadDocument(schemaPath: string): Promise<object | undefined> {
         this.logger.debug('Loading ' + schemaPath);
         const str = await readFile(schemaPath, 'utf-8');
         const parsed = JSON.parse(str);
 
         // TODO this currently assumes it's a schema.
-        if (!parsed || !parsed['$id']) {
+        if (!parsed || !(parsed as Record<string, unknown>)['$id']) {
             this.logger.warn('Warning: bad schema found, no $id property was defined. Path: '+ schemaPath);
-            return;
+            return undefined;
         }
         
-        const schemaId = parsed['$id'];
+        const schemaId = (parsed as Record<string, unknown>)['$id'];
 
         if (!parsed['$schema']) {
             this.logger.warn('Warning, loaded schema does not have $schema set and therefore may be invalid. Path: '+  schemaPath);

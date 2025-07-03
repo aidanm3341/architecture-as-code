@@ -5,7 +5,7 @@ import {
     CalmAdrOptionSchema,
     CalmAdrDecisionSchema,
     CalmAdrLinkSchema,
-} from '../types/adr-types';
+} from '../types/adr-types.js';
 
 export class CalmAdrMeta {
     constructor(
@@ -46,11 +46,11 @@ export class CalmAdr {
             calmAdrSchema.updateDateTime,
             calmAdrSchema.contextAndProblemStatement,
             calmAdrSchema.decisionDrivers,
-            calmAdrSchema.consideredOptions.map((option) =>
+            calmAdrSchema.consideredOptions.map((option: CalmAdrOptionSchema) =>
                 CalmOption.fromJson(option)
             ),
             calmAdrSchema.decisionOutcome,
-            calmAdrSchema.links.map((link) => CalmLink.fromJson(link))
+            calmAdrSchema.links.map((link: CalmAdrLinkSchema) => CalmLink.fromJson(link))
         );
     }
 }

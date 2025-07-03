@@ -35,7 +35,7 @@ describe('runValidate', () => {
             pattern: 'pattern.json',
             schemaDirectory: 'schemas',
             verbose: true,
-            format: 'json',
+            format: 'json' as const,
             output: 'out.json',
             strict: false,
         };
@@ -61,7 +61,7 @@ describe('runValidate', () => {
             pattern: 'pattern.json',
             schemaDirectory: 'schemas',
             verbose: false,
-            format: 'json',
+            format: 'json' as const,
             output: 'out.json',
             strict: false,
         };
@@ -70,7 +70,7 @@ describe('runValidate', () => {
         (validate as Mock).mockRejectedValue(error);
         const loggerMock = { error: vi.fn(), debug: vi.fn() };
         (initLogger as Mock).mockReturnValue(loggerMock);
-        const exitSpy = vi.spyOn(process, 'exit').mockImplementation((code?: number) => {
+        const exitSpy = vi.spyOn(process, 'exit').mockImplementation((code?: string | number | null | undefined) => {
             throw new Error(`process.exit called with ${code}`);
         });
 

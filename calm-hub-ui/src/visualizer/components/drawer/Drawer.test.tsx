@@ -7,7 +7,7 @@ describe('Drawer', () => {
         render(
             <Drawer
                 calmInstance={undefined}
-                title={undefined}
+                title=""
                 isConDescActive={true}
                 isNodeDescActive={true}
             />
@@ -19,7 +19,7 @@ describe('Drawer', () => {
         render(
             <Drawer
                 calmInstance={undefined}
-                title={undefined}
+                title=""
                 isConDescActive={false}
                 isNodeDescActive={false}
             />

@@ -24,7 +24,7 @@ export function VisualizerContainer({
         null
     );
 
-    const entityClickedCallback = useCallback((x: CalmNode['data'] | Edge['data']) => setSelectedItem(x), []);
+    const entityClickedCallback = useCallback((x: CytoscapeNode['data'] | Edge['data']) => setSelectedItem(x), []);
 
     return (
         <div className="relative flex m-auto border" data-testid="visualizer-container">

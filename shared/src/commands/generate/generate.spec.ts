@@ -1,4 +1,5 @@
 import { runGenerate } from './generate';
+import { SchemaPropertyBase } from './components/options';
 import { tmpdir } from 'node:os';
 import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import path from 'node:path';
@@ -29,10 +30,10 @@ vi.mock('./components/instantiate', () => ({
 
 
 describe('runGenerate', () => {
-    let tempDirectoryPath;
+    let tempDirectoryPath: string;
     const testPath: string = 'test_fixtures/api-gateway.json';
-    const testPattern: object = JSON.parse(readFileSync(testPath, { encoding: 'utf8' }));
-    let schemaDirectory;
+    const testPattern: SchemaPropertyBase = JSON.parse(readFileSync(testPath, { encoding: 'utf8' }));
+    let schemaDirectory: SchemaDirectory;
 
     beforeEach(() => {
         tempDirectoryPath = mkdtempSync(path.join(tmpdir(), 'calm-test-'));
