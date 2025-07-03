@@ -13,6 +13,7 @@ import {
     MiniMap,
     SelectionMode,
     ConnectionLineType,
+    MarkerType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { ReactFlowNode, ReactFlowEdge } from '../../contracts/contracts.js';
@@ -21,9 +22,11 @@ import {
     loadStoredNodePositions,
 } from '../../services/node-position-service.js';
 import CustomNode from './components/CustomNode.js';
+import CustomEdge from './components/CustomEdge.js';
 import { GroupOverlay } from './components/GroupOverlay.js';
 import { convertNodesToReactFlow } from './utils/nodeConversion.js';
 import { convertEdgesToReactFlow } from './utils/edgeConversion.js';
+import { applyDagreLayout, getLayoutOptions, getLayoutName } from './utils/layoutUtils.js';
 
 interface GroupData {
     id: string;
@@ -47,7 +50,9 @@ export interface ReactFlowRendererProps {
 const nodeTypes = {
     custom: CustomNode,
 };
-const edgeTypes = {};
+const edgeTypes = {
+    custom: CustomEdge,
+};
 
 const defaultViewport = { x: 0, y: 0, zoom: 1 };
 
@@ -64,6 +69,7 @@ export function ReactFlowRenderer({
     const [reactFlowNodes, setNodes, onNodesChange] = useNodesState([]);
     const [reactFlowEdges, setEdges, onEdgesChange] = useEdgesState([]);
     const [viewport] = useState(defaultViewport);
+    const [showLayoutControls, setShowLayoutControls] = useState(false);
 
     // Convert nodes using utility function
     const convertNodes = useCallback((inputNodes: ReactFlowNode[], savedPositions?: { id: string, position: { x: number, y: number } }[]) => {
@@ -74,6 +80,34 @@ export function ReactFlowRenderer({
     const convertEdges = useCallback((inputEdges: ReactFlowEdge[], nodes: Node[]) => {
         return convertEdgesToReactFlow(inputEdges, nodes, isRelationshipDescActive);
     }, [isRelationshipDescActive]);
+
+    // Apply automatic layout
+    const applyLayout = useCallback((direction: 'TB' | 'BT' | 'LR' | 'RL' = 'TB') => {
+        if (reactFlowNodes.length === 0) return;
+        
+        const layoutedNodes = applyDagreLayout(reactFlowNodes, reactFlowEdges, {
+            direction,
+            spacing: {
+                rank: direction === 'LR' || direction === 'RL' ? 180 : 120,
+                node: direction === 'LR' || direction === 'RL' ? 100 : 80,
+            },
+        });
+        
+        setNodes(layoutedNodes);
+        
+        // Recalculate edges with new anchor points after layout
+        requestAnimationFrame(() => {
+            const updatedEdges = convertEdges(edges, layoutedNodes);
+            setEdges(updatedEdges);
+        });
+        
+        // Save the new positions
+        const nodePositions = layoutedNodes.map((node) => ({
+            id: node.id,
+            position: node.position,
+        }));
+        saveNodePositions(calmKey, nodePositions);
+    }, [reactFlowNodes, reactFlowEdges, setNodes, calmKey, edges, convertEdges, setEdges]);
 
     // Update nodes and edges when props change - optimized to reduce recalculations
     useEffect(() => {
@@ -87,10 +121,32 @@ export function ReactFlowRenderer({
             convertedNodes.forEach((node) => {
                 const savedPos = savedPositions.find((pos) => pos.id === node.id);
                 if (savedPos) {
-                    // Snap saved position to grid
+                    // Determine node dimensions
+                    const nodeType = (node.data.nodeType || node.data.type)?.toLowerCase() || 'default';
+                    const isDatabase = nodeType === 'database';
+                    const isActor = nodeType === 'actor';
+                    
+                    let nodeWidth = 220;
+                    let nodeHeight = 120;
+                    
+                    if (isDatabase) {
+                        nodeWidth = 180;
+                        nodeHeight = 120;
+                    } else if (isActor) {
+                        nodeWidth = 200;
+                        nodeHeight = 180;
+                    }
+                    
+                    // Snap saved position to grid using center-based alignment
+                    const centerX = savedPos.position.x + nodeWidth / 2;
+                    const centerY = savedPos.position.y + nodeHeight / 2;
+                    
+                    const snappedCenterX = Math.round(centerX / 20) * 20;
+                    const snappedCenterY = Math.round(centerY / 20) * 20;
+                    
                     node.position = {
-                        x: Math.round(savedPos.position.x / 20) * 20,
-                        y: Math.round(savedPos.position.y / 20) * 20,
+                        x: snappedCenterX - nodeWidth / 2,
+                        y: snappedCenterY - nodeHeight / 2,
                     };
                 }
             });
@@ -179,7 +235,12 @@ export function ReactFlowRenderer({
                 nodeTypes={nodeTypes}
                 edgeTypes={edgeTypes}
                 connectionMode={ConnectionMode.Loose}
-                connectionLineType={ConnectionLineType.SmoothStep}
+                connectionLineType={ConnectionLineType.Step}
+                defaultEdgeOptions={{
+                    type: 'step',
+                    style: { strokeWidth: 2 },
+                    markerEnd: { type: MarkerType.ArrowClosed },
+                }}
                 defaultViewport={viewport}
                 fitView
                 fitViewOptions={{
@@ -215,6 +276,94 @@ export function ReactFlowRenderer({
                     zoomable
                     position="bottom-right"
                 />
+                
+                {/* Layout Controls */}
+                <div style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    zIndex: 1000,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                }}>
+                    <button
+                        onClick={() => setShowLayoutControls(!showLayoutControls)}
+                        style={{
+                            padding: '8px 12px',
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            color: '#374151',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                            backdropFilter: 'blur(8px)',
+                        }}
+                    >
+                        🎯 Layout
+                    </button>
+                    
+                    {showLayoutControls && (
+                        <div style={{
+                            background: 'rgba(255, 255, 255, 0.98)',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '8px',
+                            padding: '12px',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                            backdropFilter: 'blur(12px)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '6px',
+                            minWidth: '120px',
+                        }}>
+                            <div style={{
+                                fontSize: '11px',
+                                fontWeight: '600',
+                                color: '#6b7280',
+                                marginBottom: '4px',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px',
+                            }}>
+                                Auto Layout
+                            </div>
+                            
+                            {getLayoutOptions().map((option) => (
+                                <button
+                                    key={option.direction}
+                                    onClick={() => {
+                                        applyLayout(option.direction);
+                                        setShowLayoutControls(false);
+                                    }}
+                                    style={{
+                                        padding: '6px 10px',
+                                        background: 'transparent',
+                                        border: '1px solid #e5e7eb',
+                                        borderRadius: '6px',
+                                        cursor: 'pointer',
+                                        fontSize: '11px',
+                                        fontWeight: '500',
+                                        color: '#374151',
+                                        textAlign: 'left',
+                                        transition: 'all 0.2s ease',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = '#f3f4f6';
+                                        e.currentTarget.style.borderColor = '#d1d5db';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = 'transparent';
+                                        e.currentTarget.style.borderColor = '#e5e7eb';
+                                    }}
+                                >
+                                    {getLayoutName(option.direction)}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
+                
                 <GroupOverlay groups={groups} />
             </ReactFlow>
         </div>

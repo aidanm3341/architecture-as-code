@@ -11,10 +11,19 @@ export interface NodePositions {
     position: { x: number; y: number };
 }
 
-function snapToGrid(position: { x: number; y: number }, gridSize = 20): { x: number; y: number } {
+function snapToGrid(position: { x: number; y: number }, nodeWidth = 220, nodeHeight = 120, gridSize = 20): { x: number; y: number } {
+    // Calculate center position
+    const centerX = position.x + nodeWidth / 2;
+    const centerY = position.y + nodeHeight / 2;
+    
+    // Snap center to grid
+    const snappedCenterX = Math.round(centerX / gridSize) * gridSize;
+    const snappedCenterY = Math.round(centerY / gridSize) * gridSize;
+    
+    // Return top-left position
     return {
-        x: Math.round(position.x / gridSize) * gridSize,
-        y: Math.round(position.y / gridSize) * gridSize,
+        x: snappedCenterX - nodeWidth / 2,
+        y: snappedCenterY - nodeHeight / 2,
     };
 }
 
@@ -115,7 +124,7 @@ export function convertNodesToReactFlow(
 
             // Snap parent position to grid
             const parentPosition = parentNode.position || { x: Math.random() * 300, y: Math.random() * 300 };
-            const snappedParentPosition = snapToGrid(parentPosition);
+            const snappedParentPosition = snapToGrid(parentPosition, groupSize.width, groupSize.height);
 
             result.push({
                 id: parentId,
@@ -151,7 +160,7 @@ export function convertNodesToReactFlow(
 
         // Snap position to grid
         const basePosition = node.position || { x: Math.random() * 500, y: Math.random() * 500 };
-        const snappedPosition = snapToGrid(basePosition);
+        const snappedPosition = snapToGrid(basePosition, 220, 120);
 
         const baseNode: Node = {
             id: node.data.id,
@@ -188,7 +197,7 @@ export function convertNodesToReactFlow(
                     x: leftPadding + col * (nodeWidth + horizontalSpacing),
                     y: headerHeight + row * (nodeHeight + verticalSpacing),
                 };
-                baseNode.position = snapToGrid(childPosition);
+                baseNode.position = snapToGrid(childPosition, nodeWidth, nodeHeight);
             }
         }
 

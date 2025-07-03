@@ -79,7 +79,6 @@ export function GroupOverlay({ groups }: GroupOverlayProps) {
                                 maxWidth: 'fit-content',
                             }}
                         >
-                            <span style={{ fontSize: '16px' }}>{style.labelIcon}</span>
                             <span style={{ flex: 1, fontWeight: '600' }}>{group.label}</span>
                             {group.description && (
                                 <span style={{ 

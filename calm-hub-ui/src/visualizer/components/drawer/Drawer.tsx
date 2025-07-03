@@ -134,6 +134,24 @@ function getGroupData(calmInstance: CalmArchitectureSchema) {
     return groups;
 }
 
+function getGroupContainerNodeIds(calmInstance: CalmArchitectureSchema): Set<string> {
+    const containerNodeIds = new Set<string>();
+    
+    calmInstance.relationships?.forEach((relationship) => {
+        if (isComposedOf(relationship)) {
+            const rel = relationship['relationship-type']['composed-of'];
+            containerNodeIds.add(rel.container);
+        }
+        
+        if (isDeployedIn(relationship)) {
+            const rel = relationship['relationship-type']['deployed-in'];
+            containerNodeIds.add(rel.container);
+        }
+    });
+    
+    return containerNodeIds;
+}
+
 export function Drawer({
     calmInstance,
     title,
@@ -156,8 +174,13 @@ export function Drawer({
 
         const composedOfRelationships = getComposedOfRelationships(calmInstance);
         const deployedInRelationships = getDeployedInRelationships(calmInstance);
+        
+        // Get nodes that are used as group containers and should be excluded
+        const groupContainerNodeIds = getGroupContainerNodeIds(calmInstance);
 
-        return (calmInstance.nodes ?? []).map((node) => {
+        return (calmInstance.nodes ?? [])
+            .filter((node) => !groupContainerNodeIds.has(node['unique-id'])) // Filter out group container nodes
+            .map((node) => {
             const newData: ReactFlowNode = {
                 data: {
                     id: node['unique-id'],

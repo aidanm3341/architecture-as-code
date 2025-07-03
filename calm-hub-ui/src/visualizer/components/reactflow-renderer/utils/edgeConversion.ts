@@ -112,6 +112,17 @@ export function convertEdgesToReactFlow(
     nodes: Node[], 
     isRelationshipDescActive: boolean
 ): Edge[] {
+    // Group edges by source-target pairs to handle multiple edges between same nodes
+    const edgeGroups = new Map<string, ReactFlowEdge[]>();
+    
+    inputEdges.forEach((edge) => {
+        const key = `${edge.data.source}-${edge.data.target}`;
+        if (!edgeGroups.has(key)) {
+            edgeGroups.set(key, []);
+        }
+        edgeGroups.get(key)!.push(edge);
+    });
+    
     return inputEdges.map((edge, index) => {
         const { sourceHandle, targetHandle } = calculateAnchorPoints(edge.data.source, edge.data.target, nodes);
         const edgeStyle = getEdgeStyle(edge.data.relationshipType);
@@ -119,13 +130,22 @@ export function convertEdgesToReactFlow(
         // Enhanced label with better formatting
         const label = isRelationshipDescActive ? edge.data.label : '';
         
+        // Calculate offset for multiple edges between same nodes
+        const edgeKey = `${edge.data.source}-${edge.data.target}`;
+        const edgeGroup = edgeGroups.get(edgeKey)!;
+        const edgeIndexInGroup = edgeGroup.findIndex(e => e.data.id === edge.data.id);
+        const totalEdgesInGroup = edgeGroup.length;
+        
+        // Create offset for multiple edges (stagger them slightly)
+        const offsetMultiplier = totalEdgesInGroup > 1 ? (edgeIndexInGroup - (totalEdgesInGroup - 1) / 2) * 15 : 0;
+        
         return {
             id: edge.data.id,
             source: edge.data.source,
             target: edge.data.target,
             sourceHandle,
             targetHandle,
-            type: 'smoothstep', // Changed from 'straight' for better curves
+            type: 'step', // Right-angled step edges for architecture diagram style
             label,
             data: {
                 ...edge.data,
@@ -136,6 +156,11 @@ export function convertEdgesToReactFlow(
                 strokeWidth: edgeStyle.strokeWidth,
                 strokeDasharray: edgeStyle.strokeDasharray,
                 filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+                strokeLinecap: 'round',
+                strokeLinejoin: 'round',
+            },
+            pathOptions: {
+                borderRadius: 8, // Slightly rounded corners for cleaner right angles
             },
             labelStyle: {
                 fontSize: '10px',
