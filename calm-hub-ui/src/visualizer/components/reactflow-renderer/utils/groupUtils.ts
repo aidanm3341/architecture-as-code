@@ -20,11 +20,9 @@ interface GroupBounds {
 }
 
 export function calculateGroupBounds(groups: GroupData[], nodes: Node[]): GroupBounds[] {
-    return groups.map(group => {
+    return groups.map((group) => {
         // Find nodes that are members of this group
-        const memberNodes = nodes.filter(node => 
-            group.memberNodeIds.includes(node.id)
-        );
+        const memberNodes = nodes.filter((node) => group.memberNodeIds.includes(node.id));
 
         if (memberNodes.length === 0) {
             // If no member nodes are found, return a default small rectangle
@@ -42,19 +40,21 @@ export function calculateGroupBounds(groups: GroupData[], nodes: Node[]): GroupB
 
         // Use ReactFlow's getNodesBounds utility
         const bounds = getNodesBounds(memberNodes);
-        
-        // Add padding around the group
-        const padding = 30;
-        
+
+        // Add padding around the group with extra space at the top for the label
+        const sidePadding = 30;
+        const topPadding = 80; // Extra space for the label at the top
+        const bottomPadding = 30;
+
         return {
             id: group.id,
             label: group.label,
             description: group.description,
             type: group.type,
-            x: bounds.x - padding,
-            y: bounds.y - padding,
-            width: bounds.width + (padding * 2),
-            height: bounds.height + (padding * 2),
+            x: bounds.x - sidePadding,
+            y: bounds.y - topPadding,
+            width: bounds.width + sidePadding * 2,
+            height: bounds.height + topPadding + bottomPadding,
         };
     });
 }

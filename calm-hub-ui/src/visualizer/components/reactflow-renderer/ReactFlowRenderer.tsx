@@ -82,12 +82,16 @@ export function ReactFlowRenderer({
         
         const convertedNodes = convertNodes(nodes, savedPositions || undefined);
 
-        // Apply saved positions to converted nodes
+        // Apply saved positions to converted nodes and snap to grid
         if (savedPositions) {
             convertedNodes.forEach((node) => {
                 const savedPos = savedPositions.find((pos) => pos.id === node.id);
                 if (savedPos) {
-                    node.position = savedPos.position;
+                    // Snap saved position to grid
+                    node.position = {
+                        x: Math.round(savedPos.position.x / 20) * 20,
+                        y: Math.round(savedPos.position.y / 20) * 20,
+                    };
                 }
             });
         }
@@ -195,8 +199,8 @@ export function ReactFlowRenderer({
                 nodesConnectable={false}
                 nodesDraggable={true}
                 edgesFocusable={true}
-                snapToGrid={false}
-                snapGrid={[15, 15]}
+                snapToGrid={true}
+                snapGrid={[20, 20]}
                 deleteKeyCode={null} // Disable delete key to prevent accidental deletions
                 attributionPosition="bottom-left"
                 proOptions={{ hideAttribution: true }}

@@ -11,6 +11,13 @@ export interface NodePositions {
     position: { x: number; y: number };
 }
 
+function snapToGrid(position: { x: number; y: number }, gridSize = 20): { x: number; y: number } {
+    return {
+        x: Math.round(position.x / gridSize) * gridSize,
+        y: Math.round(position.y / gridSize) * gridSize,
+    };
+}
+
 export function calculateGroupSize(
     children: ReactFlowNode[], 
     savedPositions?: NodePositions[]
@@ -106,10 +113,14 @@ export function convertNodesToReactFlow(
             const groupSize = calculateGroupSize(children, savedPositions);
             const relationshipType = parentRelationshipTypes.get(parentId) || 'group';
 
+            // Snap parent position to grid
+            const parentPosition = parentNode.position || { x: Math.random() * 300, y: Math.random() * 300 };
+            const snappedParentPosition = snapToGrid(parentPosition);
+
             result.push({
                 id: parentId,
                 type: 'group',
-                position: parentNode.position || { x: Math.random() * 300, y: Math.random() * 300 },
+                position: snappedParentPosition,
                 data: {
                     ...parentNode.data,
                     label: parentLabel,
@@ -138,10 +149,14 @@ export function convertNodesToReactFlow(
             ? node.data.reactFlowProps.labelWithDescription
             : node.data.reactFlowProps.labelWithoutDescription;
 
+        // Snap position to grid
+        const basePosition = node.position || { x: Math.random() * 500, y: Math.random() * 500 };
+        const snappedPosition = snapToGrid(basePosition);
+
         const baseNode: Node = {
             id: node.data.id,
             type: 'custom',
-            position: node.position || { x: Math.random() * 500, y: Math.random() * 500 },
+            position: snappedPosition,
             data: {
                 ...node.data,
                 label,
@@ -169,10 +184,11 @@ export function convertNodesToReactFlow(
                 const col = childIndex % cols;
                 const row = Math.floor(childIndex / cols);
                 
-                baseNode.position = {
+                const childPosition = {
                     x: leftPadding + col * (nodeWidth + horizontalSpacing),
                     y: headerHeight + row * (nodeHeight + verticalSpacing),
                 };
+                baseNode.position = snapToGrid(childPosition);
             }
         }
 

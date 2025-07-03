@@ -6,13 +6,14 @@ interface CustomNodeData {
     name: string;
     id: string;
     nodeType?: string;
+    type?: string;
     description?: string;
 }
 
 function CustomNode({ data, selected }: NodeProps<CustomNodeData>) {
     // Enhanced color and shape system based on node types
     const getNodeStyle = () => {
-        const nodeType = data.nodeType?.toLowerCase() || 'default';
+        const nodeType = (data.nodeType || data.type)?.toLowerCase() || 'default';
         
         // Define base styles for different node types
         const nodeStyles = {
@@ -26,7 +27,7 @@ function CustomNode({ data, selected }: NodeProps<CustomNodeData>) {
             database: {
                 backgroundColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
                 borderColor: '#f093fb',
-                shape: '8px',
+                shape: 'cylinder',
                 icon: '🗄️',
                 shadowColor: 'rgba(240, 147, 251, 0.4)'
             },
@@ -85,10 +86,242 @@ function CustomNode({ data, selected }: NodeProps<CustomNodeData>) {
     };
     
     const nodeStyle = getNodeStyle();
+    const nodeType = (data.nodeType || data.type)?.toLowerCase() || 'default';
+    const isDatabase = nodeType === 'database';
     
+    // Database cylinder styling
+    if (isDatabase) {
+        return (
+            <div
+                className={`custom-node ${nodeType} ${selected ? 'selected' : ''}`}
+                style={{
+                    position: 'relative',
+                    width: '180px',
+                    height: '120px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    color: 'white',
+                    textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                    cursor: 'pointer',
+                    transform: selected ? 'translateY(-2px) scale(1.02)' : 'translateY(0) scale(1)',
+                    transition: 'transform 0.2s ease',
+                }}
+            >
+                {/* Database cylinder shape */}
+                <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: nodeStyle.backgroundColor,
+                    borderRadius: '90px / 20px',
+                    border: `${selected ? '3' : '2'}px solid ${nodeStyle.borderColor}`,
+                    boxShadow: selected 
+                        ? `0 8px 25px ${nodeStyle.shadowColor}, 0 0 0 3px ${nodeStyle.borderColor}33`
+                        : `0 4px 15px ${nodeStyle.shadowColor}`,
+                    backdropFilter: 'blur(10px)',
+                }} />
+                
+                {/* Top ellipse */}
+                <div style={{
+                    position: 'absolute',
+                    top: '-2px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: '176px',
+                    height: '24px',
+                    background: nodeStyle.backgroundColor,
+                    borderRadius: '50%',
+                    border: `${selected ? '3' : '2'}px solid ${nodeStyle.borderColor}`,
+                    boxShadow: `0 2px 8px ${nodeStyle.shadowColor}`,
+                }} />
+                
+                {/* Content container */}
+                <div style={{
+                    position: 'relative',
+                    zIndex: 2,
+                    padding: '20px 16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '100%',
+                }}>
+                    {/* Database Icon */}
+                    <div style={{
+                        fontSize: '18px',
+                        marginBottom: '6px',
+                        opacity: 0.9
+                    }}>
+                        {nodeStyle.icon}
+                    </div>
+                    
+                    {/* Node Title */}
+                    <div style={{
+                        fontSize: '13px',
+                        fontWeight: '700',
+                        lineHeight: '1.2',
+                        marginBottom: '3px',
+                        wordBreak: 'break-word',
+                        maxWidth: '100%',
+                        color: 'white',
+                        textShadow: '0 1px 2px rgba(0,0,0,0.4)'
+                    }}>
+                        {data.name}
+                    </div>
+                    
+                    {/* Node Type */}
+                    <div style={{
+                        fontSize: '9px',
+                        fontWeight: '500',
+                        lineHeight: '1.1',
+                        marginBottom: data.description ? '6px' : '0',
+                        wordBreak: 'break-word',
+                        maxWidth: '100%',
+                        color: 'rgba(255, 255, 255, 0.85)',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                        textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                    }}>
+                        [DATABASE]
+                    </div>
+                    
+                    {/* Description */}
+                    {data.description && (
+                        <div style={{
+                            fontSize: '8px',
+                            opacity: 0.8,
+                            fontWeight: '400',
+                            lineHeight: '1.3',
+                            textAlign: 'center',
+                            maxWidth: '100%',
+                            wordBreak: 'break-word',
+                            color: 'rgba(255, 255, 255, 0.9)',
+                            textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                            marginTop: '2px'
+                        }}>
+                            {data.description}
+                        </div>
+                    )}
+                </div>
+                
+                {/* Hidden Handles for database nodes */}
+                <Handle 
+                    type="target" 
+                    position={Position.Top} 
+                    id="top" 
+                    style={{
+                        opacity: 0,
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        width: '12px',
+                        height: '12px',
+                        boxShadow: 'none'
+                    }}
+                />
+                <Handle 
+                    type="source" 
+                    position={Position.Top} 
+                    id="top-source" 
+                    style={{
+                        opacity: 0,
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        width: '12px',
+                        height: '12px',
+                        boxShadow: 'none'
+                    }}
+                />
+                <Handle 
+                    type="target" 
+                    position={Position.Right} 
+                    id="right" 
+                    style={{
+                        opacity: 0,
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        width: '12px',
+                        height: '12px',
+                        boxShadow: 'none'
+                    }}
+                />
+                <Handle 
+                    type="source" 
+                    position={Position.Right} 
+                    id="right-source" 
+                    style={{
+                        opacity: 0,
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        width: '12px',
+                        height: '12px',
+                        boxShadow: 'none'
+                    }}
+                />
+                <Handle 
+                    type="target" 
+                    position={Position.Bottom} 
+                    id="bottom" 
+                    style={{
+                        opacity: 0,
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        width: '12px',
+                        height: '12px',
+                        boxShadow: 'none'
+                    }}
+                />
+                <Handle 
+                    type="source" 
+                    position={Position.Bottom} 
+                    id="bottom-source" 
+                    style={{
+                        opacity: 0,
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        width: '12px',
+                        height: '12px',
+                        boxShadow: 'none'
+                    }}
+                />
+                <Handle 
+                    type="target" 
+                    position={Position.Left} 
+                    id="left" 
+                    style={{
+                        opacity: 0,
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        width: '12px',
+                        height: '12px',
+                        boxShadow: 'none'
+                    }}
+                />
+                <Handle 
+                    type="source" 
+                    position={Position.Left} 
+                    id="left-source" 
+                    style={{
+                        opacity: 0,
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        width: '12px',
+                        height: '12px',
+                        boxShadow: 'none'
+                    }}
+                />
+            </div>
+        );
+    }
+    
+    // Regular node styling for non-database nodes
     return (
         <div
-            className={`custom-node ${data.nodeType?.toLowerCase() || 'default'} ${selected ? 'selected' : ''}`}
+            className={`custom-node ${nodeType} ${selected ? 'selected' : ''}`}
             style={{
                 background: nodeStyle.backgroundColor,
                 border: `${selected ? '3' : '2'}px solid ${nodeStyle.borderColor}`,
@@ -117,71 +350,75 @@ function CustomNode({ data, selected }: NodeProps<CustomNodeData>) {
         >
             {/* Node Type Icon */}
             <div style={{
-                fontSize: '24px',
+                fontSize: '20px',
                 marginBottom: '8px',
                 opacity: 0.9
             }}>
                 {nodeStyle.icon}
             </div>
             
-            {/* Main Label */}
+            {/* Node Title */}
             <div style={{
-                fontSize: '14px',
+                fontSize: '15px',
                 fontWeight: '700',
-                lineHeight: '1.3',
-                marginBottom: data.description ? '6px' : '0',
+                lineHeight: '1.2',
+                marginBottom: '4px',
                 wordBreak: 'break-word',
-                maxWidth: '100%'
+                maxWidth: '100%',
+                color: 'white',
+                textShadow: '0 1px 2px rgba(0,0,0,0.4)'
             }}>
-                {data.label}
+                {data.name}
             </div>
+            
+            {/* Node Type */}
+            {(data.nodeType || data.type) && (
+                <div style={{
+                    fontSize: '11px',
+                    fontWeight: '500',
+                    lineHeight: '1.1',
+                    marginBottom: data.description ? '8px' : '0',
+                    wordBreak: 'break-word',
+                    maxWidth: '100%',
+                    color: 'rgba(255, 255, 255, 0.85)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                }}>
+                    [{data.nodeType || data.type}]
+                </div>
+            )}
             
             {/* Description */}
             {data.description && (
                 <div style={{
-                    fontSize: '11px',
-                    opacity: 0.85,
+                    fontSize: '10px',
+                    opacity: 0.8,
                     fontWeight: '400',
-                    lineHeight: '1.2',
+                    lineHeight: '1.3',
                     textAlign: 'center',
                     maxWidth: '100%',
-                    wordBreak: 'break-word'
+                    wordBreak: 'break-word',
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                    marginTop: '4px'
                 }}>
                     {data.description}
                 </div>
             )}
             
-            {/* Node Type Badge */}
-            {data.nodeType && (
-                <div style={{
-                    position: 'absolute',
-                    top: '6px',
-                    right: '6px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    color: 'white',
-                    padding: '2px 6px',
-                    borderRadius: '8px',
-                    fontSize: '9px',
-                    fontWeight: '600',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px',
-                    backdropFilter: 'blur(4px)'
-                }}>
-                    {data.nodeType}
-                </div>
-            )}
-            
-            {/* Enhanced Handles */}
+            {/* Hidden Handles - invisible but functional for connections */}
             <Handle 
                 type="target" 
                 position={Position.Top} 
                 id="top" 
                 style={{
-                    backgroundColor: nodeStyle.borderColor,
-                    border: '2px solid white',
+                    opacity: 0,
+                    backgroundColor: 'transparent',
+                    border: 'none',
                     width: '12px',
                     height: '12px',
-                    boxShadow: `0 2px 8px ${nodeStyle.shadowColor}`
+                    boxShadow: 'none'
                 }}
             />
             <Handle 
@@ -189,11 +426,12 @@ function CustomNode({ data, selected }: NodeProps<CustomNodeData>) {
                 position={Position.Top} 
                 id="top-source" 
                 style={{
-                    backgroundColor: nodeStyle.borderColor,
-                    border: '2px solid white',
+                    opacity: 0,
+                    backgroundColor: 'transparent',
+                    border: 'none',
                     width: '12px',
                     height: '12px',
-                    boxShadow: `0 2px 8px ${nodeStyle.shadowColor}`
+                    boxShadow: 'none'
                 }}
             />
             <Handle 
@@ -201,11 +439,12 @@ function CustomNode({ data, selected }: NodeProps<CustomNodeData>) {
                 position={Position.Right} 
                 id="right" 
                 style={{
-                    backgroundColor: nodeStyle.borderColor,
-                    border: '2px solid white',
+                    opacity: 0,
+                    backgroundColor: 'transparent',
+                    border: 'none',
                     width: '12px',
                     height: '12px',
-                    boxShadow: `0 2px 8px ${nodeStyle.shadowColor}`
+                    boxShadow: 'none'
                 }}
             />
             <Handle 
@@ -213,11 +452,12 @@ function CustomNode({ data, selected }: NodeProps<CustomNodeData>) {
                 position={Position.Right} 
                 id="right-source" 
                 style={{
-                    backgroundColor: nodeStyle.borderColor,
-                    border: '2px solid white',
+                    opacity: 0,
+                    backgroundColor: 'transparent',
+                    border: 'none',
                     width: '12px',
                     height: '12px',
-                    boxShadow: `0 2px 8px ${nodeStyle.shadowColor}`
+                    boxShadow: 'none'
                 }}
             />
             <Handle 
@@ -225,11 +465,12 @@ function CustomNode({ data, selected }: NodeProps<CustomNodeData>) {
                 position={Position.Bottom} 
                 id="bottom" 
                 style={{
-                    backgroundColor: nodeStyle.borderColor,
-                    border: '2px solid white',
+                    opacity: 0,
+                    backgroundColor: 'transparent',
+                    border: 'none',
                     width: '12px',
                     height: '12px',
-                    boxShadow: `0 2px 8px ${nodeStyle.shadowColor}`
+                    boxShadow: 'none'
                 }}
             />
             <Handle 
@@ -237,11 +478,12 @@ function CustomNode({ data, selected }: NodeProps<CustomNodeData>) {
                 position={Position.Bottom} 
                 id="bottom-source" 
                 style={{
-                    backgroundColor: nodeStyle.borderColor,
-                    border: '2px solid white',
+                    opacity: 0,
+                    backgroundColor: 'transparent',
+                    border: 'none',
                     width: '12px',
                     height: '12px',
-                    boxShadow: `0 2px 8px ${nodeStyle.shadowColor}`
+                    boxShadow: 'none'
                 }}
             />
             <Handle 
@@ -249,11 +491,12 @@ function CustomNode({ data, selected }: NodeProps<CustomNodeData>) {
                 position={Position.Left} 
                 id="left" 
                 style={{
-                    backgroundColor: nodeStyle.borderColor,
-                    border: '2px solid white',
+                    opacity: 0,
+                    backgroundColor: 'transparent',
+                    border: 'none',
                     width: '12px',
                     height: '12px',
-                    boxShadow: `0 2px 8px ${nodeStyle.shadowColor}`
+                    boxShadow: 'none'
                 }}
             />
             <Handle 
@@ -261,11 +504,12 @@ function CustomNode({ data, selected }: NodeProps<CustomNodeData>) {
                 position={Position.Left} 
                 id="left-source" 
                 style={{
-                    backgroundColor: nodeStyle.borderColor,
-                    border: '2px solid white',
+                    opacity: 0,
+                    backgroundColor: 'transparent',
+                    border: 'none',
                     width: '12px',
                     height: '12px',
-                    boxShadow: `0 2px 8px ${nodeStyle.shadowColor}`
+                    boxShadow: 'none'
                 }}
             />
         </div>
