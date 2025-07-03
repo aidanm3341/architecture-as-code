@@ -20,23 +20,31 @@ import {
     saveNodePositions,
     loadStoredNodePositions,
 } from '../../services/node-position-service.js';
-import GroupNode from './GroupNode.js';
 import CustomNode from './components/CustomNode.js';
+import { GroupOverlay } from './components/GroupOverlay.js';
 import { convertNodesToReactFlow } from './utils/nodeConversion.js';
 import { convertEdgesToReactFlow } from './utils/edgeConversion.js';
+
+interface GroupData {
+    id: string;
+    label: string;
+    description?: string;
+    type: 'composed-of' | 'deployed-in';
+    memberNodeIds: string[];
+}
 
 export interface ReactFlowRendererProps {
     isNodeDescActive: boolean;
     isRelationshipDescActive: boolean;
     nodes: ReactFlowNode[];
     edges: ReactFlowEdge[];
+    groups?: GroupData[];
     nodeClickedCallback: (x: ReactFlowNode['data'] | ReactFlowEdge['data']) => void;
     edgeClickedCallback: (x: ReactFlowNode['data'] | ReactFlowEdge['data']) => void;
     calmKey: string;
 }
 
 const nodeTypes = {
-    group: GroupNode,
     custom: CustomNode,
 };
 const edgeTypes = {};
@@ -46,6 +54,7 @@ const defaultViewport = { x: 0, y: 0, zoom: 1 };
 export function ReactFlowRenderer({
     nodes = [],
     edges = [],
+    groups = [],
     isRelationshipDescActive,
     isNodeDescActive,
     nodeClickedCallback,
@@ -117,6 +126,26 @@ export function ReactFlowRenderer({
             // Apply changes immediately for responsive UI
             onNodesChange(changes);
             
+            // Check if any position changes occurred
+            const positionChanges = changes.filter((change) => change.type === 'position');
+            
+            if (positionChanges.length > 0) {
+                // Recalculate edges with new anchor points when nodes move
+                requestAnimationFrame(() => {
+                    const updatedNodes = reactFlowNodes.map((node) => {
+                        const positionChange = positionChanges.find((change) => change.id === node.id);
+                        if (positionChange && 'position' in positionChange && positionChange.position) {
+                            return { ...node, position: positionChange.position };
+                        }
+                        return node;
+                    });
+                    
+                    // Recalculate edges with updated node positions
+                    const updatedEdges = convertEdges(edges, updatedNodes);
+                    setEdges(updatedEdges);
+                });
+            }
+            
             // Only save positions after drag ends - but don't block the UI
             const dragEndChanges = changes.filter((change) => change.type === 'position' && 'dragging' in change && change.dragging === false);
             
@@ -131,7 +160,7 @@ export function ReactFlowRenderer({
                 });
             }
         },
-        [onNodesChange, reactFlowNodes, calmKey]
+        [onNodesChange, reactFlowNodes, calmKey, edges, convertEdges, setEdges]
     );
 
     return (
@@ -182,6 +211,7 @@ export function ReactFlowRenderer({
                     zoomable
                     position="bottom-right"
                 />
+                <GroupOverlay groups={groups} />
             </ReactFlow>
         </div>
     );

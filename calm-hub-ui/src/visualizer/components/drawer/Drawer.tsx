@@ -47,6 +47,10 @@ function isConnects(
     return 'connects' in relationship['relationship-type'];
 }
 
+function hasOptions(relationship: CalmRelationshipSchema): boolean {
+    return 'options' in relationship['relationship-type'];
+}
+
 function getComposedOfRelationships(calmInstance: CalmArchitectureSchema) {
     const composedOfRelationships: {
         [idx: string]: {
@@ -92,6 +96,42 @@ function getDeployedInRelationships(calmInstance: CalmArchitectureSchema) {
     });
 
     return deployedInRelationships;
+}
+
+function getGroupData(calmInstance: CalmArchitectureSchema) {
+    const groups: Array<{
+        id: string;
+        label: string;
+        description?: string;
+        type: 'composed-of' | 'deployed-in';
+        memberNodeIds: string[];
+    }> = [];
+
+    calmInstance.relationships?.forEach((relationship) => {
+        if (isComposedOf(relationship)) {
+            const rel = relationship['relationship-type']['composed-of'];
+            groups.push({
+                id: relationship['unique-id'],
+                label: rel.container,
+                description: relationship.description,
+                type: 'composed-of',
+                memberNodeIds: rel.nodes,
+            });
+        }
+        
+        if (isDeployedIn(relationship)) {
+            const rel = relationship['relationship-type']['deployed-in'];
+            groups.push({
+                id: relationship['unique-id'],
+                label: rel.container,
+                description: relationship.description,
+                type: 'deployed-in',
+                memberNodeIds: rel.nodes,
+            });
+        }
+    });
+
+    return groups;
 }
 
 export function Drawer({
@@ -143,19 +183,7 @@ export function Drawer({
                 newData.data.controls = node.controls;
             }
 
-            const composedOfRel = composedOfRelationships[node['unique-id']];
-            const deployedInRel = deployedInRelationships[node['unique-id']];
-
-            const parentId =
-                composedOfRel?.type === 'child' && composedOfRel.parent
-                    ? composedOfRel.parent
-                    : deployedInRel?.type === 'child' && deployedInRel.parent
-                      ? deployedInRel.parent
-                      : undefined;
-
-            if (parentId) {
-                newData.data.parent = parentId;
-            }
+            // No longer set parent relationships - we'll handle grouping visually
             return newData;
         });
     }
@@ -163,36 +191,75 @@ export function Drawer({
     function getEdges(): ReactFlowEdge[] {
         if (!calmInstance || !calmInstance.relationships) return [];
 
-        return calmInstance.relationships
-            .filter((relationship) => !isComposedOf(relationship) && !isDeployedIn(relationship))
-            .map((relationship) => {
-                if (isInteracts(relationship)) {
-                    return {
+        const edges: ReactFlowEdge[] = [];
+
+        calmInstance.relationships.forEach((relationship, index) => {
+            if (isInteracts(relationship)) {
+                const rel = relationship['relationship-type'].interacts;
+                // Create an edge for each target node - use original node IDs
+                rel.nodes.forEach((targetNode) => {
+                    const edge = {
                         data: {
-                            id: relationship['unique-id'],
+                            id: `${relationship['unique-id']}-${targetNode}`,
                             label: relationship.description || '',
-                            source: relationship['relationship-type'].interacts.actor,
-                            target: relationship['relationship-type'].interacts.nodes[0],
+                            source: rel.actor,
+                            target: targetNode,
                             relationshipType: 'interacts-with',
                         },
                     } as ReactFlowEdge;
+                    edges.push(edge);
+                });
+            }
+            
+            if (isConnects(relationship)) {
+                const rel = relationship['relationship-type'].connects;
+                // Use original node IDs for connects relationships
+                const edge = {
+                    data: {
+                        id: relationship['unique-id'],
+                        label: relationship.description || '',
+                        source: rel.source.node,
+                        target: rel.destination.node,
+                        relationshipType: 'connects-to',
+                    },
+                } as ReactFlowEdge;
+                edges.push(edge);
+            }
+            
+            // Note: composed-of and deployed-in relationships are now handled visually 
+            // through group rectangles rather than edges
+            
+            if (hasOptions(relationship)) {
+                const options = relationship['relationship-type'].options;
+                // Create edges to represent options relationships
+                if (options && Array.isArray(options)) {
+                    options.forEach((optionGroup, groupIndex) => {
+                        if (Array.isArray(optionGroup)) {
+                            optionGroup.forEach((option, optionIndex) => {
+                                if (option.nodes && option.relationships) {
+                                    // Create edges between related nodes in the option
+                                    option.nodes.forEach((nodeId, nodeIndex) => {
+                                        if (nodeIndex < option.nodes.length - 1) {
+                                            edges.push({
+                                                data: {
+                                                    id: `${relationship['unique-id']}-option-${groupIndex}-${optionIndex}-${nodeIndex}`,
+                                                    label: option.description || 'option',
+                                                    source: nodeId,
+                                                    target: option.nodes[nodeIndex + 1],
+                                                    relationshipType: 'options',
+                                                },
+                                            } as ReactFlowEdge);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
                 }
-                if (isConnects(relationship)) {
-                    const source = relationship['relationship-type'].connects.source.node;
-                    const target = relationship['relationship-type'].connects.destination.node;
-                    return {
-                        data: {
-                            id: relationship['unique-id'],
-                            label: relationship.description || '',
-                            source,
-                            target,
-                            relationshipType: 'connects-to',
-                        },
-                    } as ReactFlowEdge;
-                }
-                return undefined;
-            })
-            .filter((edge): edge is ReactFlowEdge => edge !== undefined);
+            }
+        });
+
+        return edges;
     }
 
     function createStorageKey(title: string, data?: Data): string {
@@ -204,6 +271,7 @@ export function Drawer({
 
     const edges = getEdges();
     const nodes = getNodes();
+    const groups = calmInstance ? getGroupData(calmInstance) : [];
 
     return (
         <div className="flex-1 flex overflow-hidden">
@@ -223,6 +291,7 @@ export function Drawer({
                             title={title}
                             nodes={nodes}
                             edges={edges}
+                            groups={groups}
                             calmKey={createStorageKey(title, data)}
                         />
                     ) : (

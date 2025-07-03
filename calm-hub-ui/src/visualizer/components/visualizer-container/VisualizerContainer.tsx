@@ -3,12 +3,21 @@ import { ReactFlowNode, ReactFlowEdge } from '../../contracts/contracts.js';
 import { Sidebar } from '../sidebar/Sidebar.js';
 import { ReactFlowRenderer } from '../reactflow-renderer/ReactFlowRenderer.js';
 
+interface GroupData {
+    id: string;
+    label: string;
+    description?: string;
+    type: 'composed-of' | 'deployed-in';
+    memberNodeIds: string[];
+}
+
 interface VisualizerContainerProps {
     title?: string;
     isNodeDescActive: boolean;
     isRelationshipDescActive: boolean;
     nodes: ReactFlowNode[];
     edges: ReactFlowEdge[];
+    groups?: GroupData[];
     calmKey: string;
 }
 
@@ -16,6 +25,7 @@ export function VisualizerContainer({
     title = '',
     nodes = [],
     edges = [],
+    groups = [],
     isRelationshipDescActive,
     isNodeDescActive,
     calmKey,
@@ -39,6 +49,7 @@ export function VisualizerContainer({
                 isRelationshipDescActive={isRelationshipDescActive}
                 nodes={nodes}
                 edges={edges}
+                groups={groups}
                 nodeClickedCallback={entityClickedCallback}
                 edgeClickedCallback={entityClickedCallback}
                 calmKey={calmKey}

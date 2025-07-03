@@ -41,6 +41,7 @@ export type ReactFlowNodeData = {
     interfaces?: CalmInterfaceSchema[];
     controls?: CalmControlsSchema;
     parent?: string;
+    parentRelationshipType?: 'composed-of' | 'deployed-in';
 };
 
 export type ReactFlowEdge = {

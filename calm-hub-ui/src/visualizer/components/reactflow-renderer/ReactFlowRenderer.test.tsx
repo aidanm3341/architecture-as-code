@@ -37,6 +37,13 @@ vi.mock('reactflow', () => ({
     Handle: () => <div data-testid="react-flow-handle" />,
     useNodesState: () => [[], vi.fn(), vi.fn()],
     useEdgesState: () => [[], vi.fn(), vi.fn()],
+    useReactFlow: () => ({
+        getNodes: () => [],
+        getViewport: () => ({ x: 0, y: 0, zoom: 1 }),
+    }),
+    useViewport: () => ({ x: 0, y: 0, zoom: 1 }),
+    useNodes: () => [],
+    getNodesBounds: () => ({ x: 0, y: 0, width: 100, height: 100 }),
 }));
 
 // Mock node position service

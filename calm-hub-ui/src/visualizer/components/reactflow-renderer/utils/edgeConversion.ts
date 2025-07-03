@@ -11,7 +11,7 @@ export function calculateAnchorPoints(sourceId: string, targetId: string, nodes:
     const targetNode = nodes.find(n => n.id === targetId);
     
     if (!sourceNode || !targetNode) {
-        return { sourceHandle: 'bottom', targetHandle: 'top' };
+        return { sourceHandle: 'bottom-source', targetHandle: 'top' };
     }
     
     const sourceCenter = {
@@ -28,26 +28,26 @@ export function calculateAnchorPoints(sourceId: string, targetId: string, nodes:
     const deltaY = targetCenter.y - sourceCenter.y;
     
     // Determine source handle based on direction to target
-    let sourceHandle = 'bottom';
+    let sourceHandle = 'bottom-source';
     let targetHandle = 'top';
     
     // Use the larger delta to determine primary direction
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
         // Horizontal connection is primary
         if (deltaX > 0) {
-            sourceHandle = 'right';
+            sourceHandle = 'right-source';
             targetHandle = 'left';
         } else {
-            sourceHandle = 'left';
+            sourceHandle = 'left-source';
             targetHandle = 'right';
         }
     } else {
         // Vertical connection is primary
         if (deltaY > 0) {
-            sourceHandle = 'bottom';
+            sourceHandle = 'bottom-source';
             targetHandle = 'top';
         } else {
-            sourceHandle = 'top';
+            sourceHandle = 'top-source';
             targetHandle = 'bottom';
         }
     }
@@ -138,35 +138,36 @@ export function convertEdgesToReactFlow(
                 filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
             },
             labelStyle: {
-                fontSize: '13px',
-                fontWeight: '600',
-                color: '#2c3e50',
-                backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                padding: '6px 12px',
-                borderRadius: '12px',
-                border: `2px solid ${edgeStyle.stroke}`,
-                boxShadow: `0 4px 12px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.8)`,
-                backdropFilter: 'blur(8px)',
+                fontSize: '12px',
+                fontWeight: '500',
+                color: '#374151',
+                backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                border: `1px solid ${edgeStyle.stroke}`,
+                boxShadow: `0 2px 8px rgba(0,0,0,0.1)`,
+                backdropFilter: 'blur(4px)',
                 textShadow: 'none',
-                lineHeight: '1.2',
-                maxWidth: '200px',
+                lineHeight: '1.4',
+                maxWidth: '180px',
                 wordBreak: 'break-word',
                 textAlign: 'center',
                 userSelect: 'none',
-                pointerEvents: 'none'
+                pointerEvents: 'none',
+                whiteSpace: 'pre-wrap'
             },
-            labelBgPadding: [8, 4] as [number, number],
-            labelBgBorderRadius: 12,
+            labelBgPadding: [6, 3] as [number, number],
+            labelBgBorderRadius: 8,
             labelBgStyle: {
-                fill: 'rgba(255, 255, 255, 0.95)',
+                fill: 'rgba(255, 255, 255, 0.98)',
                 stroke: edgeStyle.stroke,
-                strokeWidth: 1,
-                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.1))'
+                strokeWidth: 0.5,
+                filter: 'drop-shadow(0 1px 3px rgba(0,0,0,0.1))'
             },
             markerEnd: {
                 type: MarkerType.ArrowClosed,
-                width: 25,
-                height: 25,
+                width: 20,
+                height: 20,
                 color: edgeStyle.markerColor,
             },
             animated: false, // Can be enabled for specific edge types if needed

@@ -14,6 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm test` - Run tests once with Vitest
 - `npm run test-coverage` - Run tests with coverage report
 - `npm run watch-test` - Run tests in watch mode
+- `npm test -- --run` - Run tests without watch mode (useful for CI/validation)
 
 ### Code Quality
 - `npm run lint` - Run ESLint
@@ -86,3 +87,45 @@ Brand assets are copied from `../brand/` to `public/` during build. The copy-pub
 - Parent-child relationships rendered using ReactFlow's parentId system
 - Automatic layout with manual node positioning override
 - Position data persisted per CALM instance using unique storage keys
+
+## CALM Data Flow and Relationship Handling
+
+### CALM Schema Integration
+- Uses `@finos/calm-shared` package for type definitions via relative path `../shared/src/types/`
+- Core types: `CalmArchitectureSchema`, `CalmNodeSchema`, `CalmRelationshipSchema`
+- Relationship types: `interacts`, `connects`, `composed-of`, `deployed-in`, `options`
+
+### Data Processing Pipeline
+1. **Hub → Visualizer**: Data passed via React Router state from Hub JSON viewer
+2. **File Upload**: Local CALM files processed in Visualizer component
+3. **Drawer Component**: Main data transformation logic in `src/visualizer/components/drawer/Drawer.tsx`
+   - `getNodes()`: Transforms CALM nodes to ReactFlow nodes with parent-child relationships
+   - `getEdges()`: Transforms CALM relationships to ReactFlow edges (all relationship types)
+4. **Edge Conversion**: `src/visualizer/components/reactflow-renderer/utils/edgeConversion.ts`
+   - Different visual styles per relationship type (colors, dash patterns, markers)
+   - Smart anchor point calculation based on node positions
+
+### Relationship Visualization
+- **interacts**: Actor → multiple target nodes (creates edge per target)
+- **connects**: Source node → destination node with interface details
+- **composed-of**: Container → composed nodes (parent-child + visible edges)
+- **deployed-in**: Container → deployed nodes (parent-child + visible edges)
+- **options**: Decision point relationships (basic edge implementation)
+
+## Important Development Notes
+
+### Monorepo Structure
+- This UI app depends on `../shared/` for CALM types and `../brand/` for assets
+- Backend API expected at `localhost:8080` with `/calm` endpoints
+- Build process copies assets and can deploy to `../calm-hub/` Java project
+
+### Testing Patterns
+- Vitest with jsdom environment for React component testing
+- `*.test.tsx` pattern for test files
+- Mock services with axios-mock-adapter for API testing
+- Testing Library for React component interactions
+
+### Import Conventions
+- Uses `.js` extensions in imports (legacy from Create React App migration)
+- Relative imports from shared monorepo packages via `../../../shared/src/`
+- ReactFlow components and utilities imported from `reactflow` package
