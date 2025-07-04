@@ -63,23 +63,23 @@ export function getGroupStyle(type: 'composed-of' | 'deployed-in') {
     switch (type) {
         case 'composed-of':
             return {
-                borderColor: '#4a90e2',
-                backgroundColor: 'rgba(74, 144, 226, 0.08)',
-                labelColor: '#4a90e2',
+                borderColor: '#000000',
+                backgroundColor: 'transparent',
+                labelColor: '#000000',
                 labelIcon: '',
             };
         case 'deployed-in':
             return {
-                borderColor: '#228b22',
-                backgroundColor: 'rgba(34, 139, 34, 0.08)',
-                labelColor: '#228b22',
+                borderColor: '#000000',
+                backgroundColor: 'transparent',
+                labelColor: '#000000',
                 labelIcon: '',
             };
         default:
             return {
-                borderColor: '#666',
-                backgroundColor: 'rgba(128, 128, 128, 0.08)',
-                labelColor: '#666',
+                borderColor: '#000000',
+                backgroundColor: 'transparent',
+                labelColor: '#000000',
                 labelIcon: '',
             };
     }

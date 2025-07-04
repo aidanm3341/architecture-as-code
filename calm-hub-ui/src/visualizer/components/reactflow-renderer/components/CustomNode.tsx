@@ -18,61 +18,61 @@ function CustomNode({ data, selected }: NodeProps<CustomNodeData>) {
         // Define base styles for different node types
         const nodeStyles = {
             service: {
-                backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                backgroundColor: '#667eea',
                 borderColor: '#667eea',
                 shape: '12px',
                 shadowColor: 'rgba(102, 126, 234, 0.4)'
             },
             database: {
-                backgroundColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                backgroundColor: '#f093fb',
                 borderColor: '#f093fb',
                 shape: 'cylinder',
                 shadowColor: 'rgba(240, 147, 251, 0.4)'
             },
             actor: {
-                backgroundColor: 'linear-gradient(135deg, #ff9a56 0%, #ff6b35 100%)',
+                backgroundColor: '#ff9a56',
                 borderColor: '#ff9a56',
                 shape: 'actor',
                 shadowColor: 'rgba(255, 154, 86, 0.4)'
             },
             api: {
-                backgroundColor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                backgroundColor: '#4facfe',
                 borderColor: '#4facfe',
                 shape: '16px',
                 shadowColor: 'rgba(79, 172, 254, 0.4)'
             },
             frontend: {
-                backgroundColor: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                backgroundColor: '#43e97b',
                 borderColor: '#43e97b',
                 shape: '14px',
                 shadowColor: 'rgba(67, 233, 123, 0.4)'
             },
             backend: {
-                backgroundColor: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                backgroundColor: '#fa709a',
                 borderColor: '#fa709a',
                 shape: '10px',
                 shadowColor: 'rgba(250, 112, 154, 0.4)'
             },
             external: {
-                backgroundColor: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                backgroundColor: '#a8edea',
                 borderColor: '#a8edea',
                 shape: '6px',
                 shadowColor: 'rgba(168, 237, 234, 0.4)'
             },
             queue: {
-                backgroundColor: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+                backgroundColor: '#ffecd2',
                 borderColor: '#ffecd2',
                 shape: '20px',
                 shadowColor: 'rgba(255, 236, 210, 0.4)'
             },
             cache: {
-                backgroundColor: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+                backgroundColor: '#ff9a9e',
                 borderColor: '#ff9a9e',
                 shape: '18px',
                 shadowColor: 'rgba(255, 154, 158, 0.4)'
             },
             default: {
-                backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                backgroundColor: '#667eea',
                 borderColor: '#667eea',
                 shape: '8px',
                 shadowColor: 'rgba(102, 126, 234, 0.3)'

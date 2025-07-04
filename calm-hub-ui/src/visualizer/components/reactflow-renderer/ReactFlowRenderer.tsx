@@ -224,7 +224,7 @@ export function ReactFlowRenderer({
     );
 
     return (
-        <div className="flex-1 bg-white reactflow-wrapper" style={{ height: '100vh', width: '100%' }}>
+        <div className="flex-1 bg-white reactflow-wrapper" style={{ height: 'calc(100vh - 100px)', width: '100%' }}>
             <ReactFlow
                 nodes={reactFlowNodes}
                 edges={reactFlowEdges}
