@@ -7,10 +7,14 @@ import { ThemeToggle } from './ThemeToggle.js';
 import { useTheme } from '../../theme/useTheme.js';
 import { UserAccessContext } from '../../admin/context/UserAccessContext.js';
 
-/** The navy-and-blue lockup is unreadable on a dark base; brand ships a white one. */
+/**
+ * The navy-and-blue lockup is unreadable on a dark base, so dark gets a white one.
+ * Both are navbar lockups — icon + CALM wordmark, no tagline — and share an aspect
+ * ratio, so the logo does not resize when the theme is toggled.
+ */
 const LOGO_SRC = {
     light: '/brand/Horizontal/2025_CALM_Horizontal_Navbar_Logo.svg',
-    dark: '/brand/Horizontal/2025_CALM_Horizontal_WHT.svg',
+    dark: '/brand/Horizontal/2025_CALM_Horizontal_Navbar_Logo_WHT.svg',
 } as const;
 
 function menuNavClass({ isActive }: { isActive: boolean }) {

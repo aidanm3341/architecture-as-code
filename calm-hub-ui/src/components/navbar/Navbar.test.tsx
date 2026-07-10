@@ -116,13 +116,24 @@ describe('Navbar theme', () => {
 
         expect(screen.getByAltText('CALM Logo')).toHaveAttribute(
             'src',
-            '/brand/Horizontal/2025_CALM_Horizontal_WHT.svg'
+            '/brand/Horizontal/2025_CALM_Horizontal_Navbar_Logo_WHT.svg'
         );
+    });
+
+    it('uses a navbar lockup — never the full one with the tagline — in either theme', () => {
+        const dark = createMemoryStorage();
+        dark.setItem(THEME_STORAGE_KEY, 'dark');
+
+        for (const storage of [createMemoryStorage(), dark]) {
+            const { unmount } = renderNavbar(makeState({}), storage);
+            expect(screen.getByAltText('CALM Logo').getAttribute('src')).toContain('Navbar_Logo');
+            unmount();
+        }
     });
 
     it('swaps the logo when the toggle is pressed, keeping it in step with the theme', async () => {
         renderNavbar(makeState({}));
-        expect(screen.getByAltText('CALM Logo').getAttribute('src')).toContain('Navbar_Logo');
+        expect(screen.getByAltText('CALM Logo').getAttribute('src')).not.toContain('WHT');
 
         await userEvent.click(screen.getByRole('button', { name: /switch to dark theme/i }));
 

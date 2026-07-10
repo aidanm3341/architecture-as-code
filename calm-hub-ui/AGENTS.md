@@ -229,6 +229,13 @@ normalises hex to `rgb(...)`. So assert **by reference**
 (`toHaveStyle({ backgroundColor: colors.redesign.tintBg })`), never against a literal
 hex — a literal will break the moment the token becomes a var.
 
+Beware the `mockViewport`/`mockMobileViewport` helpers: they return `matches: <isMobile>`
+for **every** query, not just the width one. Since the Navbar also asks for
+`(prefers-color-scheme: dark)`, a `mockMobileViewport(true)` test silently resolves the
+theme to dark and stamps `data-theme="dark"` on the document. Harmless for the
+assertions that exist today, but if you write a theme-sensitive assertion inside a
+mobile test, match on the query string in the mock.
+
 ## Responsive Design
 
 The CALM Hub UI is **mobile responsive** — it must be usable on phones as well as
