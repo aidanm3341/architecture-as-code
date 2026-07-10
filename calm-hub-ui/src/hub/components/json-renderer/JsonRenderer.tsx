@@ -1,5 +1,6 @@
 import { Editor } from '@monaco-editor/react';
 import { useResolvedTheme } from '../../../theme/useTheme.js';
+import { CALM_DARK, defineCalmThemes } from '../../../theme/monaco-theme.js';
 
 interface JsonRendererProps {
     json?: object;
@@ -21,7 +22,8 @@ function JsonDisplay({ data, showLineNumbers = true }: { data: object; showLineN
             height="100%"
             defaultLanguage="json"
             value={JSON.stringify(data, null, 2)}
-            theme={theme === 'dark' ? 'vs-dark' : 'light'}
+            beforeMount={defineCalmThemes}
+            theme={theme === 'dark' ? CALM_DARK : 'light'}
             data-cy={"json-renderer"}
             options={{
                 readOnly: true,

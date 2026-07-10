@@ -211,6 +211,10 @@ aesthetic choice:
    paints its own colours. Use `useResolvedTheme()` from `src/theme/useTheme.ts`, which
    observes the `data-theme` attribute — never call `useTheme()` a second time, as each
    call holds its own state and the copies drift apart when the toggle is pressed.
+   Monaco's theme API takes literal hex and cannot read `--calm-*`, so the dark editor
+   chrome is duplicated in `src/theme/monaco-theme.ts`; `monaco-theme.test.ts` parses
+   theme.css and fails if the copies drift. It registers the theme from `beforeMount`
+   unconditionally — an editor first mounted in light must still be able to switch.
 
 ### Toggle and persistence
 
