@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, useNavigate } from 'react-router-dom';
 import { JsonRenderer } from './JsonRenderer.js';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 vi.mock('react-router-dom', async () => {
     const actual = await vi.importActual('react-router-dom');
@@ -12,12 +12,21 @@ vi.mock('react-router-dom', async () => {
 });
 
 vi.mock('@monaco-editor/react', () => ({
-    Editor: ({ value, options }: { value: string; options?: { lineNumbers?: 'on' | 'off' } }) => (
+    Editor: ({
+        value,
+        options,
+        theme,
+    }: {
+        value: string;
+        options?: { lineNumbers?: 'on' | 'off' };
+        theme?: string;
+    }) => (
         <textarea
             value={value}
             readOnly
             data-testid="monaco-editor"
             data-line-numbers={options?.lineNumbers}
+            data-theme={theme}
         />
     )
 }));
@@ -93,5 +102,31 @@ describe('JsonRenderer', () => {
 
         const textarea = screen.getByTestId('monaco-editor');
         expect(textarea).toHaveAttribute('data-line-numbers', 'off');
+    });
+
+    describe('theme', () => {
+        afterEach(() => document.documentElement.removeAttribute('data-theme'));
+
+        // Monaco ignores our stylesheet, so without this its light syntax colours
+        // render as near-black text on the dark surface.
+        it('uses the dark Monaco theme when the document is dark', () => {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            render(
+                <MemoryRouter>
+                    <JsonRenderer json={{ a: 1 }} />
+                </MemoryRouter>
+            );
+            expect(screen.getByTestId('monaco-editor')).toHaveAttribute('data-theme', 'vs-dark');
+        });
+
+        it('uses the light Monaco theme when the document is light', () => {
+            document.documentElement.setAttribute('data-theme', 'light');
+            render(
+                <MemoryRouter>
+                    <JsonRenderer json={{ a: 1 }} />
+                </MemoryRouter>
+            );
+            expect(screen.getByTestId('monaco-editor')).toHaveAttribute('data-theme', 'light');
+        });
     });
 });
