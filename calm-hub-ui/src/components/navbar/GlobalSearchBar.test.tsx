@@ -247,6 +247,38 @@ describe('GlobalSearchBar', () => {
         expect(screen.getByTestId('location')).toHaveTextContent('/search?q=payments');
     });
 
+    it('does not reopen the dropdown with stale results after the query is cleared', async () => {
+        // A search that stays in flight until we resolve it by hand.
+        let resolveSearch!: (r: GroupedSearchResults) => void;
+        const searchFn = vi.fn().mockImplementation(
+            () => new Promise<GroupedSearchResults>((res) => { resolveSearch = res; })
+        );
+        renderWithLocation(createMockSearchService(searchFn));
+
+        const input = screen.getByPlaceholderText('Search CALM Hub...');
+
+        // Fire a search for "test" and leave it unresolved.
+        fireEvent.change(input, { target: { value: 'test' } });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(300);
+        });
+        expect(searchFn).toHaveBeenCalledWith('test');
+
+        // Backspace to empty — this must abort the in-flight "test" request.
+        fireEvent.change(input, { target: { value: '' } });
+        await act(async () => {
+            await vi.advanceTimersByTimeAsync(300);
+        });
+
+        // The stale request resolves; its results must be discarded, not shown.
+        await act(async () => {
+            resolveSearch(mockResults);
+        });
+
+        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+        expect(screen.queryByText('Test Architecture')).not.toBeInTheDocument();
+    });
+
     it('deep-links (does not go to the results page) when a highlighted result is chosen with Enter', async () => {
         renderWithLocation(createMockSearchService(vi.fn().mockResolvedValue(mockResults)));
 

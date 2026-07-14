@@ -50,9 +50,15 @@ export function useCatalogueSearch(searchService?: SearchService): UseCatalogueS
     const performSearch = useCallback(
         async (searchQuery: string) => {
             if (!searchQuery.trim()) {
+                // Abort any in-flight request so a longer query left unresolved can't
+                // resolve later and reopen the dropdown with stale results over an
+                // empty input. (Its `finally` then skips setLoading(false), so clear
+                // loading here too.)
+                abortRef.current?.abort();
                 setResults(null);
                 setOpen(false);
                 setError(false);
+                setLoading(false);
                 return;
             }
 
@@ -96,12 +102,15 @@ export function useCatalogueSearch(searchService?: SearchService): UseCatalogueS
     }, []);
 
     const clear = useCallback(() => {
+        // cancelPending aborts any in-flight request; that request's `finally` then
+        // skips setLoading(false), so clear loading here too (no stuck spinner).
         cancelPending();
         setQuery('');
         setResults(null);
         setOpen(false);
         setSelectedIndex(-1);
         setError(false);
+        setLoading(false);
     }, [cancelPending]);
 
     const closeDropdown = useCallback(() => {
